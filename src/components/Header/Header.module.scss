@@ -1,3 +1,14 @@
 .header {
-  background-color: red;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text);
+  background-color: var(--background);
+  border-bottom: 1px solid #eeeeee;
+  box-shadow: 0 4px 4px -4px #e6e6e6;
 }
