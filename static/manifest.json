@@ -1,0 +1,21 @@
+{
+  "name": "TabView",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac": "Command+Shift+A"
+      }
+    }
+  },
+  "browser_action": {
+    "default_title": "Tab View",
+    "default_popup": "popup.html"
+  }
+}
