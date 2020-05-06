@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 4rem;
+  height: var(--header-spacing);
   width: 100%;
   display: flex;
   justify-content: space-between;

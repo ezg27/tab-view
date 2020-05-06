@@ -1,11 +1,14 @@
 @charset 'utf-8';
 
-// Theme
 :root {
+  // Theme
   --primary: #ed6a5a;
   --secondary: #595758;
   --text: #3e3b3c;
   --background: #fafafa;
+
+  // Spacing
+  --header-spacing: 4rem;
 }
 
 *,

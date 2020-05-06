@@ -5,7 +5,7 @@ import styles from './App.module.scss';
 
 const App: React.FC = () => {
   return (
-    <div className={styles.appContainer}>
+    <div className={styles.app}>
       <Header />
       <ContentSection />
     </div>
