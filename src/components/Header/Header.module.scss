@@ -2,13 +2,21 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 60px;
+  height: 4rem;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   color: var(--text);
   background-color: var(--background);
   border-bottom: 1px solid #eeeeee;
   box-shadow: 0 4px 4px -4px #e6e6e6;
+  padding: 0 1rem;
+
+  input {
+    width: 13rem;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--secondary);
+    border-radius: 0.3rem;
+  }
 }
