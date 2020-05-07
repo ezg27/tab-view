@@ -11,6 +11,7 @@ const App: React.FC = () => {
 
   const fuse = new Fuse(currentWindowTabs, {
     keys: ['title', 'url'],
+    threshold: 0.4,
   });
 
   // Get all tabs in current window
