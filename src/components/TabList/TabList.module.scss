@@ -1,0 +1,14 @@
+.tabList {
+  height: 100%;
+
+  ul {
+    height: 100%;
+    overflow-y: scroll;
+
+    li:hover {
+      cursor: pointer;
+      background-color: #c5c5c5;
+      user-select: none;
+    }
+  }
+}

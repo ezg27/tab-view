@@ -1,4 +1,5 @@
 import React from 'react';
+import TabList from '../TabList';
 import styles from './ContentSection.module.scss';
 
 type ContentSectionProps = {
@@ -10,17 +11,11 @@ const setActiveTab = (tab: chrome.tabs.Tab) => {
   chrome.tabs.update(tab.id, { active: true });
 };
 
-const ContentSection: React.FC<ContentSectionProps> = ({ currentTabs }) => {
+const ContentSection: React.FC<ContentSectionProps> = props => {
   return (
     <main className={styles.contentSection}>
       <h3>Current window</h3>
-      <ul>
-        {currentTabs.map(tab => (
-          <li key={tab.title} onClick={() => setActiveTab(tab)} unselectable='on'>
-            {tab.title}
-          </li>
-        ))}
-      </ul>
+      <TabList setActiveTab={setActiveTab} {...props} />
     </main>
   );
 };
