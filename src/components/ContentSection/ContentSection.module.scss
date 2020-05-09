@@ -1,19 +1,7 @@
 .contentSection {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100%;
   padding-top: var(--header-spacing);
   padding-left: 1rem;
   padding-right: 1rem;
-
-  ul {
-    flex: 1;
-    overflow: auto;
-  }
-
-  li:hover {
-    cursor: pointer;
-    background-color: #c5c5c5;
-    user-select: none;
-  }
+  overflow: scroll;
 }

@@ -1,26 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import TabList from '../TabList';
 import styles from './ContentSection.module.scss';
 
 type ContentSectionProps = {
-  currentTabs: chrome.tabs.Tab[];
+  searchTerm: string;
 };
 
-const setActiveTab = (tab: chrome.tabs.Tab) => {
-  if (tab.active || !tab.id) return;
-  chrome.tabs.update(tab.id, { active: true });
-};
+const ContentSection: React.FC<ContentSectionProps> = props => {
+  // TODO: create lazy initial state function to get all windows/tabs instead of useEffect
+  // OR: create custom hook that returns current window and other windows
+  const [currentWindow, setCurrentWindow] = useState<chrome.windows.Window>({} as chrome.windows.Window);
+  const [otherWindows, setOtherWindows] = useState<chrome.windows.Window[]>([]);
 
-const ContentSection: React.FC<ContentSectionProps> = ({ currentTabs }) => {
+  // Get all tabs for all windows
+  useEffect(() => {
+    chrome.windows.getCurrent({ populate: true }, window => {
+      setCurrentWindow(window);
+      chrome.windows.getAll({ populate: true }, allWindows => {
+        const otherWindows = allWindows.filter(windowItem => windowItem.id !== window.id);
+        console.log(otherWindows);
+        setOtherWindows(otherWindows);
+      });
+    });
+  }, []);
+
   return (
     <main className={styles.contentSection}>
       <h3>Current window</h3>
-      <ul>
-        {currentTabs.map(tab => (
-          <li key={tab.title} onClick={() => setActiveTab(tab)} unselectable='on'>
-            {tab.title}
-          </li>
-        ))}
-      </ul>
+      <TabList tabs={currentWindow.tabs || []} {...props} />
+      {!!otherWindows.length && (
+        <>
+          <h3>Other windows</h3>
+          {otherWindows.map(window => (
+            <TabList key={window.id} tabs={window.tabs || []} {...props} />
+          ))}
+        </>
+      )}
     </main>
   );
 };
