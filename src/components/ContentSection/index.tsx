@@ -18,7 +18,6 @@ const ContentSection: React.FC<ContentSectionProps> = props => {
       setCurrentWindow(window);
       chrome.windows.getAll({ populate: true }, allWindows => {
         const otherWindows = allWindows.filter(windowItem => windowItem.id !== window.id);
-        console.log(otherWindows);
         setOtherWindows(otherWindows);
       });
     });
@@ -27,12 +26,12 @@ const ContentSection: React.FC<ContentSectionProps> = props => {
   return (
     <main className={styles.contentSection}>
       <h3>Current window</h3>
-      <TabList tabs={currentWindow.tabs || []} {...props} />
+      <TabList window={currentWindow} {...props} />
       {!!otherWindows.length && (
         <>
           <h3>Other windows</h3>
           {otherWindows.map(window => (
-            <TabList key={window.id} tabs={window.tabs || []} {...props} />
+            <TabList key={window.id} window={window} {...props} />
           ))}
         </>
       )}
