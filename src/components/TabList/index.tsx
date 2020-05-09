@@ -4,16 +4,22 @@ import styles from './TabList.module.scss';
 
 type TabListProps = {
   searchTerm: string;
-  tabs: chrome.tabs.Tab[];
+  window: chrome.windows.Window;
 };
 
-const setActiveTab = (tab: chrome.tabs.Tab) => {
-  if (tab.active || !tab.id) return;
-  chrome.tabs.update(tab.id, { active: true });
+const setActiveTab = (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): void => {
+  chrome.windows.getCurrent(currentWindow => {
+    if (!tab.id) return;
+    if (currentWindow.id !== parentWindow.id) {
+      chrome.windows.update(parentWindow.id, { focused: true }, () => window.close());
+    }
+    if (tab.active) return;
+    chrome.tabs.update(tab.id, { active: true });
+  });
 };
 
-const TabList: React.FC<TabListProps> = ({ searchTerm, tabs }) => {
-  const result = useFuzzySearch<chrome.tabs.Tab>(searchTerm, tabs, {
+const TabList: React.FC<TabListProps> = ({ searchTerm, window }) => {
+  const result = useFuzzySearch<chrome.tabs.Tab>(searchTerm, window.tabs || [], {
     keys: ['title', 'url'],
     threshold: 0.3,
     distance: 1000,
@@ -23,7 +29,7 @@ const TabList: React.FC<TabListProps> = ({ searchTerm, tabs }) => {
     <div className={styles.tabList}>
       <ul>
         {result.map(tab => (
-          <li key={tab.title} onClick={() => setActiveTab(tab)} unselectable='on'>
+          <li key={tab.title} onClick={() => setActiveTab(tab, window)} unselectable='on'>
             {tab.title}
           </li>
         ))}
