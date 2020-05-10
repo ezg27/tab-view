@@ -1,12 +1,10 @@
 .tabList {
+  border: 1px solid grey;
+  margin-bottom: 5px;
   ul {
     height: 100%;
     overflow-y: scroll;
-
-    li:hover {
-      cursor: pointer;
-      background-color: #c5c5c5;
-      user-select: none;
-    }
+    display: flex;
+    flex-direction: column;
   }
 }

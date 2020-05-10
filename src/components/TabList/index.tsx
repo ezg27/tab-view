@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFuzzySearch } from '../../hooks/useFuzzySearch';
+import TabListItem from '../TabListItem';
 import styles from './TabList.module.scss';
 
 type TabListProps = {
@@ -18,6 +19,11 @@ const setActiveTab = (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window)
   });
 };
 
+const closeTab = (tab: chrome.tabs.Tab): void => {
+  if (!tab.id) return;
+  chrome.tabs.remove(tab.id);
+};
+
 const TabList: React.FC<TabListProps> = ({ searchTerm, window }) => {
   const result = useFuzzySearch<chrome.tabs.Tab>(searchTerm, window.tabs || [], {
     keys: ['title', 'url'],
@@ -29,9 +35,7 @@ const TabList: React.FC<TabListProps> = ({ searchTerm, window }) => {
     <div className={styles.tabList}>
       <ul>
         {result.map(tab => (
-          <li key={tab.title} onClick={() => setActiveTab(tab, window)} unselectable='on'>
-            {tab.title}
-          </li>
+          <TabListItem key={tab.title} tab={tab} parentWindow={window} setActiveTab={setActiveTab} closeTab={closeTab} />
         ))}
       </ul>
     </div>
