@@ -1,5 +1,5 @@
 import CloseIcon from '@material-ui/icons/Close';
-import React from 'react';
+import React, { memo } from 'react';
 import styles from './TabListItem.module.scss';
 
 type TabListItemProps = {
@@ -9,13 +9,13 @@ type TabListItemProps = {
   closeTab: (tab: chrome.tabs.Tab) => void;
 };
 
-const TabListItem: React.FC<TabListItemProps> = ({ tab, parentWindow, setActiveTab, closeTab }) => {
+const TabListItem: React.FC<TabListItemProps> = memo(({ tab, parentWindow, setActiveTab, closeTab }) => {
   return (
     <li className={styles.tabListItem} unselectable='on'>
       <p onClick={() => setActiveTab(tab, parentWindow)}>{tab.title}</p>
       <CloseIcon className={styles.closeIcon} fontSize='small' onClick={() => closeTab(tab)} />
     </li>
   );
-};
+});
 
 export default TabListItem;
