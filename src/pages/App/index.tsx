@@ -14,19 +14,6 @@ const App: React.FC = () => {
   const [currentWindow, setCurrentWindow] = useState<ChromeWindow>({} as ChromeWindow);
   const [otherWindows, setOtherWindows] = useState<chrome.windows.Window[]>([]);
 
-  // Refresh window
-  useEffect(() => {
-    const refreshWindow = (tabId, removeInfo) => {
-      chrome.windows.getCurrent({ populate: true }, window => {
-        setCurrentWindow(window);
-      });
-    };
-    chrome.tabs.onRemoved.addListener(refreshWindow);
-    return () => {
-      chrome.tabs.onRemoved.removeListener(refreshWindow);
-    };
-  }, []);
-
   // Get all tabs for all windows
   useEffect(() => {
     const getWindows = async () => {
@@ -42,15 +29,27 @@ const App: React.FC = () => {
     getWindows();
   }, []);
 
-  const setActiveTab = useCallback(async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
+  // Refresh window
+  useEffect(() => {
+    const refreshWindow = async (tabId, removeInfo) => {
+      const window = await chromep.windows.getCurrent({ populate: true });
+      setCurrentWindow(window);
+    };
+    chrome.tabs.onRemoved.addListener(refreshWindow);
+    return () => {
+      chrome.tabs.onRemoved.removeListener(refreshWindow);
+    };
+  }, []);
+
+  const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
     if (!tab.id) return;
-    const currentWindow = await chromep.windows.getCurrent();
     if (currentWindow.id !== parentWindow.id) {
-      await chromep.windows.update(parentWindow.id, { focused: true }, () => window.close());
+      await chromep.windows.update(parentWindow.id, { focused: true });
+      window.close();
     }
     if (tab.active) return;
-    chromep.tabs.update(tab.id, { active: true });
-  }, []);
+    await chromep.tabs.update(tab.id, { active: true });
+  };
 
   const closeTab = useCallback(async (tab: chrome.tabs.Tab): Promise<void> => {
     if (!tab.id) return;
