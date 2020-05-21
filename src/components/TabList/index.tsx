@@ -22,7 +22,7 @@ const TabList: React.FC<TabListProps> = ({ searchTerm, window, setActiveTab, clo
       <ul>
         {result.map(tab => (
           <TabListItem
-            key={tab.title}
+            key={tab.id}
             tab={tab}
             parentWindow={window}
             setActiveTab={setActiveTab}
