@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useFuzzySearch } from '../../hooks/useFuzzySearch';
 import TabListItem from '../TabListItem';
 import styles from './TabList.module.scss';
@@ -10,7 +10,7 @@ type TabListProps = {
   closeTab: (tab: chrome.tabs.Tab) => void;
 };
 
-const TabList: React.FC<TabListProps> = ({ searchTerm, window, setActiveTab, closeTab }) => {
+const TabList: React.FC<TabListProps> = memo(({ searchTerm, window, setActiveTab, closeTab }) => {
   const result = useFuzzySearch<chrome.tabs.Tab>(searchTerm, window.tabs || [], {
     keys: ['title', 'url'],
     threshold: 0.3,
@@ -32,6 +32,6 @@ const TabList: React.FC<TabListProps> = ({ searchTerm, window, setActiveTab, clo
       </ul>
     </div>
   );
-};
+});
 
 export default TabList;
