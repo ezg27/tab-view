@@ -10,6 +10,7 @@
     "target": "es5",
     "allowJs": true,
     "jsx": "react",
+    "lib": ["es6", "dom"],
     "allowSyntheticDefaultImports": true
   },
   "include": ["scss-env.d.ts", "./src/**/*.tsx"]

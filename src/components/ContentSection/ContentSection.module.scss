@@ -1,6 +1,6 @@
 .contentSection {
-  height: 100%;
-  padding-top: var(--header-spacing);
+  height: calc(100% - var(--header-spacing));
+  margin-top: var(--header-spacing);
   padding-left: 1rem;
   padding-right: 1rem;
   overflow: scroll;
