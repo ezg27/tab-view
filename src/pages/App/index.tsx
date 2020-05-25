@@ -1,13 +1,10 @@
 import chromep from 'chrome-promise';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContentSection from '../../components/ContentSection';
 import Header from '../../components/Header';
 import TabList from '../../components/TabList';
+import { refreshWindow } from '../../utils/helpers';
 import styles from './App.module.scss';
-
-interface ChromeWindow extends chrome.windows.Window {
-  isActiveWindow: boolean;
-}
 
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,8 +15,8 @@ const App: React.FC = () => {
   useEffect(() => {
     const getWindows = async () => {
       const currentWindow = await chromep.windows.getCurrent({ populate: true });
-      const activeWindow: ChromeWindow = { ...currentWindow, isActiveWindow: true };
-      setCurrentWindow(activeWindow);
+      const withActiveFlag: ChromeWindow = { ...currentWindow, isActiveWindow: true };
+      setCurrentWindow(withActiveFlag);
 
       const otherWindows = (await chromep.windows.getAll({ populate: true }))
         .filter(windowItem => windowItem.id !== currentWindow.id)
@@ -29,82 +26,29 @@ const App: React.FC = () => {
     getWindows();
   }, []);
 
-  // On remove listener
+  // On tab removed listener
   useEffect(() => {
-    const refreshWindow = async (tabId, removeInfo) => {
-      // Get window tab was removed from
-      const refreshedWindow = await chromep.windows.get(removeInfo.windowId, { populate: true });
-
-      // If active window
-      if (refreshedWindow.id === currentWindow.id) {
-        setCurrentWindow({ ...refreshedWindow, isActiveWindow: true } as ChromeWindow);
-        return;
-      }
-
-      // If tab closed was last in the window
-      if (!refreshedWindow.tabs.length) {
-        setOtherWindows(windows => windows.filter(window => window.id !== refreshedWindow.id));
-        return;
-      }
-
-      setOtherWindows(windows =>
-        windows.map(window => {
-          return window.id === refreshedWindow.id
-            ? ({ ...refreshedWindow, isActiveWindow: false } as ChromeWindow)
-            : window;
-        })
-      );
+    const onRemovedListener = async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): Promise<void> => {
+      return await refreshWindow(tabId, removeInfo, setCurrentWindow, setOtherWindows);
     };
 
-    chrome.tabs.onRemoved.addListener(refreshWindow);
+    chrome.tabs.onRemoved.addListener(onRemovedListener);
     return () => {
-      chrome.tabs.onRemoved.removeListener(refreshWindow);
+      chrome.tabs.onRemoved.removeListener(onRemovedListener);
     };
-  }, [currentWindow]);
-
-  const setActiveTab = useCallback(async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
-    // Return if window is invalid
-    if (!tab.id) return;
-
-    // If tab is in another window, navigate and close extension
-    const current = await chromep.windows.getCurrent();
-    if (current.id !== parentWindow.id) {
-      await chromep.windows.update(parentWindow.id, { focused: true });
-      window.close();
-    }
-
-    // Return if current tab selected
-    if (tab.active) return;
-
-    // Navigate to tab in current window
-    await chromep.tabs.update(tab.id, { active: true });
-  }, []);
-
-  const closeTab = useCallback(async (tab: chrome.tabs.Tab): Promise<void> => {
-    // Return if window is invalid
-    if (!tab.id) return;
-
-    // Remove tab
-    await chromep.tabs.remove(tab.id);
-  }, []);
+  }, [currentWindow, otherWindows]);
 
   return (
     <div className={styles.app}>
       <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <ContentSection>
         <h3>Current window</h3>
-        <TabList searchTerm={searchTerm} window={currentWindow} setActiveTab={setActiveTab} closeTab={closeTab} />
+        <TabList searchTerm={searchTerm} window={currentWindow} />
         {!!otherWindows.length && (
           <>
             <h3>Other windows</h3>
             {otherWindows.map(window => (
-              <TabList
-                key={window.id}
-                searchTerm={searchTerm}
-                window={window}
-                setActiveTab={setActiveTab}
-                closeTab={closeTab}
-              />
+              <TabList key={window.id} searchTerm={searchTerm} window={window} />
             ))}
           </>
         )}

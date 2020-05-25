@@ -6,11 +6,9 @@ import styles from './TabList.module.scss';
 type TabListProps = {
   searchTerm: string;
   window: chrome.windows.Window;
-  setActiveTab: (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window) => void;
-  closeTab: (tab: chrome.tabs.Tab) => void;
 };
 
-const TabList: React.FC<TabListProps> = memo(({ searchTerm, window, setActiveTab, closeTab }) => {
+const TabList: React.FC<TabListProps> = memo(({ searchTerm, window }) => {
   const result = useFuzzySearch<chrome.tabs.Tab>(searchTerm, window.tabs || [], {
     keys: ['title', 'url'],
     threshold: 0.3,
@@ -25,8 +23,6 @@ const TabList: React.FC<TabListProps> = memo(({ searchTerm, window, setActiveTab
             key={tab.id}
             tab={tab}
             parentWindow={window}
-            setActiveTab={setActiveTab}
-            closeTab={closeTab}
           />
         ))}
       </ul>
