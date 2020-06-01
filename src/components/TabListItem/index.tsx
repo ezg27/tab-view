@@ -11,23 +11,29 @@ type TabListItemProps = {
 const TabListItem: React.FC<TabListItemProps> = memo(({ tab, parentWindow }) => {
   const handleActiveClick: TabClickHandler = () => setActiveTab(tab, parentWindow);
   const handleClose: TabClickHandler = () => closeTab(tab);
-  const handleEnterKeyPress = (onClick: TabClickHandler) => ({ key }: React.KeyboardEvent) => {
+  const handleKeyPress = (onClick: TabClickHandler) => ({ key }: React.KeyboardEvent) => {
     if (key === 'Enter') {
       onClick();
     }
   };
 
   return (
-    <li className={styles.tabListItem}>
-      <a onClick={handleActiveClick} onKeyPress={handleEnterKeyPress(handleActiveClick)} tabIndex={0}>
-        {tab.title}
-      </a>
+    <li
+      className={styles.tabListItem}
+      tabIndex={-1}
+      onClick={handleActiveClick}
+      onKeyPress={handleKeyPress(handleActiveClick)}
+    >
+      <p>{tab.title}</p>
       <CloseIcon
+        name='closeIcon'
         className={styles.closeIcon}
+        tabIndex={-1}
         fontSize='small'
-        onClick={handleClose}
-        onKeyPress={handleEnterKeyPress(handleClose)}
-        tabIndex={0}
+        onClick={e => {
+          e.stopPropagation();
+          handleClose();
+        }}
       />
     </li>
   );

@@ -5,28 +5,35 @@
   padding: 0.4rem;
   border-radius: 5px;
 
-  a {
+  p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
     height: 100%;
   }
-}
 
-.tabListItem:hover {
-  cursor: pointer;
-  transition: background-color 0.4s ease;
-  background-color: #cccccc;
-  user-select: none;
+  &:hover {
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+    background-color: #e6e6e6;
+    user-select: none;
+  }
+
+  &:focus {
+    transition: background-color 0.4s ease;
+    background-color: #cccccc;
+    outline: none;
+  }
 }
 
 .closeIcon {
   opacity: 0.2;
-}
 
-.closeIcon:hover {
-  opacity: 0.8;
-  transition: all 0.2s ease-in-out;
-  transform: scale(1.1);
+  &:hover {
+    opacity: 0.8;
+    transition: all 0.2s ease-in-out;
+    transform: scale(1.1);
+    outline: none;
+  }
 }

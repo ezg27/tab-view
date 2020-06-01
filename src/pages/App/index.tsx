@@ -38,6 +38,54 @@ const App: React.FC = () => {
     };
   }, [currentWindow, otherWindows]);
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const activeElement = document.activeElement;
+    const listItems = document.querySelectorAll('li[tabindex="-1"]');
+
+    if (e.keyCode === 40) {
+      // Down arrow
+      e.preventDefault();
+      if (activeElement?.tagName === 'INPUT') {
+        (listItems[0] as HTMLElement).focus();
+      }
+      if (activeElement?.tagName === 'LI') {
+        let itemIndex = 0;
+        for (let [i, value] of listItems.entries()) {
+          if (value === activeElement) {
+            itemIndex = i;
+          }
+        }
+        (listItems[itemIndex === listItems.length - 1 ? 0 : itemIndex + 1] as HTMLElement).focus();
+      }
+    } else if (e.keyCode === 38) {
+      // Up arrow
+      e.preventDefault();
+      if (activeElement?.tagName === 'INPUT') {
+        (listItems[listItems.length - 1] as HTMLElement).focus();
+      }
+      if (activeElement?.tagName === 'LI') {
+        let itemIndex = 0;
+        for (let [i, value] of listItems.entries()) {
+          if (value === activeElement) {
+            itemIndex = i;
+          }
+        }
+        if (itemIndex === 0) {
+          document.getElementById('searchBox')?.focus();
+          return;
+        }
+        (listItems[itemIndex - 1] as HTMLElement).focus();
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [handleKeyDown]);
+
   return (
     <div className={styles.app}>
       <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
