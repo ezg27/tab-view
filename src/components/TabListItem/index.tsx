@@ -5,7 +5,7 @@ import styles from './TabListItem.module.scss';
 
 type TabListItemProps = {
   tab: chrome.tabs.Tab;
-  parentWindow: chrome.windows.Window;
+  parentWindow: ChromeWindow;
 };
 
 const TabListItem: React.FC<TabListItemProps> = memo(({ tab, parentWindow }) => {

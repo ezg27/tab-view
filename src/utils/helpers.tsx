@@ -1,5 +1,15 @@
 import chromep from 'chrome-promise';
 
+export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Element>) => {
+  let itemIndex = 0;
+  for (let [i, value] of listItems.entries()) {
+    if (value === activeElement) {
+      itemIndex = i;
+    }
+  }
+  return itemIndex;
+}
+
 export const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
   // Return if window is invalid
   if (!tab.id) return;
