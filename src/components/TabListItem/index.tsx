@@ -1,18 +1,40 @@
 import CloseIcon from '@material-ui/icons/Close';
 import React, { memo } from 'react';
+import { closeTab, setActiveTab } from '../../utils/helpers';
 import styles from './TabListItem.module.scss';
-import { setActiveTab, closeTab } from '../../utils/helpers';
 
 type TabListItemProps = {
   tab: chrome.tabs.Tab;
-  parentWindow: chrome.windows.Window;
+  parentWindow: ChromeWindow;
 };
 
 const TabListItem: React.FC<TabListItemProps> = memo(({ tab, parentWindow }) => {
+  const handleActiveClick: TabClickHandler = () => setActiveTab(tab, parentWindow);
+  const handleClose: TabClickHandler = () => closeTab(tab);
+  const handleKeyPress = (onClick: TabClickHandler) => ({ key }: React.KeyboardEvent) => {
+    if (key === 'Enter') {
+      onClick();
+    }
+  };
+
   return (
-    <li className={styles.tabListItem} unselectable='on'>
-      <p onClick={() => setActiveTab(tab, parentWindow)}>{tab.title}</p>
-      <CloseIcon className={styles.closeIcon} fontSize='small' onClick={() => closeTab(tab)} />
+    <li
+      className={styles.tabListItem}
+      tabIndex={-1}
+      onClick={handleActiveClick}
+      onKeyPress={handleKeyPress(handleActiveClick)}
+    >
+      <p>{tab.title}</p>
+      <CloseIcon
+        name='closeIcon'
+        className={styles.closeIcon}
+        tabIndex={-1}
+        fontSize='small'
+        onClick={e => {
+          e.stopPropagation();
+          handleClose();
+        }}
+      />
     </li>
   );
 });

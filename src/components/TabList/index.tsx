@@ -5,7 +5,7 @@ import styles from './TabList.module.scss';
 
 type TabListProps = {
   searchTerm: string;
-  window: chrome.windows.Window;
+  window: ChromeWindow;
 };
 
 const TabList: React.FC<TabListProps> = memo(({ searchTerm, window }) => {
@@ -19,11 +19,7 @@ const TabList: React.FC<TabListProps> = memo(({ searchTerm, window }) => {
     <div className={styles.tabList}>
       <ul>
         {result.map(tab => (
-          <TabListItem
-            key={tab.id}
-            tab={tab}
-            parentWindow={window}
-          />
+          <TabListItem key={tab.id} tab={tab} parentWindow={window} />
         ))}
       </ul>
     </div>

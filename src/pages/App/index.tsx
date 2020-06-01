@@ -1,42 +1,17 @@
-import chromep from 'chrome-promise';
 import React, { useEffect, useState } from 'react';
 import ContentSection from '../../components/ContentSection';
 import Header from '../../components/Header';
 import TabList from '../../components/TabList';
-import { refreshWindow } from '../../utils/helpers';
+import { useWindows } from '../../hooks/useWindows';
 import styles from './App.module.scss';
+import { useRovingFocus } from '../../hooks/useRovingFocus';
 
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentWindow, setCurrentWindow] = useState<ChromeWindow>({} as ChromeWindow);
-  const [otherWindows, setOtherWindows] = useState<ChromeWindow[]>([]);
+  const [currentWindow, otherWindows] = useWindows();
 
-  // Get tabs for all windows
-  useEffect(() => {
-    const getWindows = async () => {
-      const currentWindow = await chromep.windows.getCurrent({ populate: true });
-      const withActiveFlag: ChromeWindow = { ...currentWindow, isActiveWindow: true };
-      setCurrentWindow(withActiveFlag);
-
-      const otherWindows = (await chromep.windows.getAll({ populate: true }))
-        .filter(windowItem => windowItem.id !== currentWindow.id)
-        .map(window => ({ ...window, isActiveWindow: false } as ChromeWindow));
-      setOtherWindows(otherWindows);
-    };
-    getWindows();
-  }, []);
-
-  // On tab removed listener
-  useEffect(() => {
-    const onRemovedListener = async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): Promise<void> => {
-      return await refreshWindow(tabId, removeInfo, setCurrentWindow, setOtherWindows);
-    };
-
-    chrome.tabs.onRemoved.addListener(onRemovedListener);
-    return () => {
-      chrome.tabs.onRemoved.removeListener(onRemovedListener);
-    };
-  }, [currentWindow, otherWindows]);
+  // Setup arrow key navigation
+  useRovingFocus();
 
   return (
     <div className={styles.app}>

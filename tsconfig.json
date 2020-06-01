@@ -10,8 +10,9 @@
     "target": "es5",
     "allowJs": true,
     "jsx": "react",
-    "lib": ["es6", "dom"],
-    "allowSyntheticDefaultImports": true
+    "lib": ["es6", "dom", "dom.iterable"],
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true
   },
-  "include": ["scss-env.d.ts", "./src/**/*.tsx"]
+  "include": ["types/scss-env.d.ts", "./src/**/*.tsx", "types/index.d.ts"]
 }
