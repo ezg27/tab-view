@@ -30,6 +30,29 @@ export const useWindows = (): [ChromeWindow, ChromeWindow[]] => {
     getWindows();
   }, []);
 
+  // On tab moved listener
+  useEffect(() => {
+    const onMovedListener = async (tabId: number, moveInfo: chrome.tabs.TabMoveInfo): Promise<void> => {
+      // Get window
+      const refreshedWindow = await chromep.windows.get(moveInfo.windowId, { populate: true });
+
+      // If active window
+      setCurrentWindow(currentWindow =>
+        currentWindow.id === refreshedWindow.id
+          ? ({
+              ...refreshedWindow,
+              isActiveWindow: true,
+            } as ChromeWindow)
+          : currentWindow
+      );
+    };
+
+    chrome.tabs.onMoved.addListener(onMovedListener);
+    return () => {
+      chrome.tabs.onMoved.removeListener(onMovedListener);
+    };
+  }, [currentWindow, otherWindows]);
+
   // On tab removed listener
   useEffect(() => {
     const onRemovedListener = async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): Promise<void> => {

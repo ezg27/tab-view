@@ -68,7 +68,7 @@ export const refreshWindow = async (
   );
 };
 
-export const moveTab = (result: DropResult) => {
+export const moveTab = async (result: DropResult): Promise<void> => {
   if (!result.destination) {
     return;
   }
@@ -77,5 +77,5 @@ export const moveTab = (result: DropResult) => {
     return;
   }
 
-  chromep.tabs.move(+result.draggableId, { index: result.destination.index });
+  await chromep.tabs.move(+result.draggableId, { index: result.destination.index });
 };
