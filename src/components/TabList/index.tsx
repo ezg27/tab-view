@@ -18,8 +18,13 @@ const TabList: React.FC<TabListProps> = memo(({ searchTerm, window }) => {
   return (
     <div className={styles.tabList}>
       <ul>
-        {result.map(tab => (
-          <TabListItem key={tab.id} tab={tab} parentWindow={window} />
+        {result.map((tab, index) => (
+          <TabListItem
+            key={tab.id}
+            tab={tab}
+            tabIndex={index}
+            parentWindow={window}
+          />
         ))}
       </ul>
     </div>

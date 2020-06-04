@@ -1,4 +1,5 @@
 import chromep from 'chrome-promise';
+import { DropResult } from 'react-beautiful-dnd';
 
 export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Element>) => {
   let itemIndex = 0;
@@ -8,7 +9,7 @@ export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Eleme
     }
   }
   return itemIndex;
-}
+};
 
 export const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
   // Return if window is invalid
@@ -42,7 +43,7 @@ export const refreshWindow = async (
   setCurrentWindow: React.Dispatch<React.SetStateAction<ChromeWindow>>,
   setOtherWindows: React.Dispatch<React.SetStateAction<ChromeWindow[]>>
 ) => {
-  // Get window tab was removed from
+  // Get window
   const refreshedWindow = await chromep.windows.get(removeInfo.windowId, { populate: true });
 
   // If active window
@@ -65,4 +66,16 @@ export const refreshWindow = async (
         : window;
     })
   );
+};
+
+export const moveTab = (result: DropResult) => {
+  if (!result.destination) {
+    return;
+  }
+
+  if (result.destination.index === result.source.index) {
+    return;
+  }
+
+  chromep.tabs.move(+result.draggableId, { index: result.destination.index });
 };

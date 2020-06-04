@@ -10,12 +10,21 @@ export const useWindows = (): [ChromeWindow, ChromeWindow[]] => {
   useEffect(() => {
     const getWindows = async () => {
       const currentWindow = await chromep.windows.getCurrent({ populate: true });
-      const withActiveFlag: ChromeWindow = { ...currentWindow, isActiveWindow: true };
+      const withActiveFlag: ChromeWindow = {
+        ...currentWindow,
+        isActiveWindow: true,
+      };
       setCurrentWindow(withActiveFlag);
 
       const otherWindows = (await chromep.windows.getAll({ populate: true }))
         .filter(windowItem => windowItem.id !== currentWindow.id)
-        .map(window => ({ ...window, isActiveWindow: false } as ChromeWindow));
+        .map(
+          window =>
+            ({
+              ...window,
+              isActiveWindow: false,
+            } as ChromeWindow)
+        );
       setOtherWindows(otherWindows);
     };
     getWindows();
