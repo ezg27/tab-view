@@ -68,14 +68,29 @@ export const refreshWindow = async (
   );
 };
 
-export const moveTab = async (result: DropResult): Promise<void> => {
-  if (!result.destination) {
+export const moveTab = (
+  result: DropResult,
+  currentWindow: ChromeWindow,
+  setCurrentWindow: React.Dispatch<React.SetStateAction<ChromeWindow>>
+): void => {
+  const { destination, source, draggableId } = result;
+  if (!destination) {
     return;
   }
 
-  if (result.destination.index === result.source.index) {
+  if (destination.droppableId === source.droppableId && destination.index === source.index) {
     return;
   }
 
-  await chromep.tabs.move(+result.draggableId, { index: result.destination.index });
+  chromep.tabs.move(+draggableId, { index: destination.index });
+
+  console.log(currentWindow);
+
+  const newTabList = Array.from(currentWindow.tabs!);
+  const movedTab = newTabList.splice(source.index, 1)[0];
+  newTabList.splice(destination.index, 0, movedTab);
+  setCurrentWindow(currentWindow => ({
+    ...currentWindow,
+    tabs: newTabList,
+  }));
 };

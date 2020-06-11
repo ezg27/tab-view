@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/popup.html",
-    "build": "rm -rf dist && parcel build src/popup.html"
+    "build": "rm -rf dist && parcel build src/popup.html src/popup.tsx"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.13",
