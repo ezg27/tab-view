@@ -46,6 +46,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           onClick={handleActiveClick}
           onKeyPress={handleKeyPress(handleActiveClick)}
         >
+          {tab.pinned && <span># .</span>}
           <p>{tab.title}</p>
           <CloseIcon
             name='closeIcon'
