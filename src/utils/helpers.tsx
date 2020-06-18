@@ -40,29 +40,21 @@ export const closeTab = async (tab: chrome.tabs.Tab): Promise<void> => {
 export const refreshWindow = async (
   _tabId: number,
   removeInfo: chrome.tabs.TabRemoveInfo,
-  setCurrentWindow: React.Dispatch<React.SetStateAction<ChromeWindow>>,
-  setOtherWindows: React.Dispatch<React.SetStateAction<ChromeWindow[]>>
+  setAllWindows: React.Dispatch<React.SetStateAction<ChromeWindow[]>>
 ) => {
   // Get window
   const refreshedWindow = await chromep.windows.get(removeInfo.windowId, { populate: true });
 
-  // If active window
-  setCurrentWindow(currentWindow =>
-    currentWindow.id === refreshedWindow.id
-      ? ({ ...refreshedWindow, isActiveWindow: true } as ChromeWindow)
-      : currentWindow
-  );
-
   // If tab closed was last in the window
   if (!refreshedWindow.tabs?.length) {
-    setOtherWindows(windows => windows.filter(window => window.id !== refreshedWindow.id));
+    setAllWindows(prevWindows => prevWindows.filter(window => window.id !== refreshedWindow.id));
     return;
   }
 
-  setOtherWindows(windows =>
-    windows.map(window => {
+  setAllWindows(prevWindows =>
+    prevWindows.map(window => {
       return window.id === refreshedWindow.id
-        ? ({ ...refreshedWindow, isActiveWindow: false } as ChromeWindow)
+        ? ({ ...refreshedWindow, isActiveWindow: window.isActiveWindow } as ChromeWindow)
         : window;
     })
   );
@@ -83,8 +75,6 @@ export const moveTab = (
   }
 
   chromep.tabs.move(+draggableId, { index: destination.index });
-
-  console.log(currentWindow);
 
   const newTabList = Array.from(currentWindow.tabs!);
   const movedTab = newTabList.splice(source.index, 1)[0];
