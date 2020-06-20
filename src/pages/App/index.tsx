@@ -18,11 +18,11 @@ const App: React.FC = () => {
   // Setup arrow key navigation
   useRovingFocus();
 
+  // Get tabs for all windows
   useEffect(() => {
     getWindows();
   }, []);
 
-  // Get tabs for all windows
   const getWindows = async () => {
     const currentWindow = await chromep.windows.getCurrent();
     const windows = (await chromep.windows.getAll({ populate: true })).map(window => {
@@ -97,30 +97,61 @@ const App: React.FC = () => {
       if (!destination) {
         return;
       }
-
+      
       if (destination.droppableId === source.droppableId && destination.index === source.index) {
         return;
       }
 
-      chrome.tabs.move(+draggableId, {
-        windowId: +destination.droppableId,
+      if (source.droppableId === destination.droppableId) {
+        // Optimistic reorder tabs
+        const window = allWindows.find(window => window.id === Number(source.droppableId));
+
+        if (!window) {
+          return;
+        }
+        const newTabList = Array.from(window.tabs!);
+        const movedTab = newTabList.splice(source.index, 1)[0];
+        newTabList.splice(destination.index, 0, movedTab);
+        setAllWindows(prevWindows =>
+          prevWindows.map(window => {
+            return window.id === Number(source.droppableId)
+              ? ({ ...window, tabs: newTabList } as ChromeWindow)
+              : window;
+          })
+        );
+      } else {
+        // Optimistic move tab between windows
+        const sourceWindow = allWindows.find(window => window.id === Number(source.droppableId));
+        const destinationWindow = allWindows.find(window => window.id === Number(destination.droppableId));
+
+        if (!sourceWindow || !destinationWindow) {
+          return;
+        }
+
+        const newSourceTabList = Array.from(sourceWindow.tabs!);
+        const newDestinationTabList = Array.from(destinationWindow.tabs!);
+
+        const movedTab = newSourceTabList.splice(source.index, 1)[0];
+        newDestinationTabList.splice(destination.index, 0, movedTab);
+
+        setAllWindows(prevWindows =>
+          prevWindows.map(window => {
+            return window.id === Number(source.droppableId)
+              ? ({ ...window, tabs: newSourceTabList } as ChromeWindow)
+              : Number(destination.droppableId)
+              ? ({ ...window, tabs: newDestinationTabList } as ChromeWindow)
+              : window;
+          })
+        );
+      }
+
+      chrome.tabs.move(Number(draggableId), {
+        windowId: Number(destination.droppableId),
         index: destination.index,
       });
-
-      // TODO: Perform optimistic adjustment before list is refreshed to prevent UI flicker vvvv
-
-      // const newTabList = Array.from(currentWindow.tabs!);
-      // const movedTab = newTabList.splice(source.index, 1)[0];
-      // newTabList.splice(destination.index, 0, movedTab);
-      // setCurrentWindow(currentWindow => ({
-      //   ...currentWindow,
-      //   tabs: newTabList,
-      // }));
     },
     [allWindows]
   );
-
-  // TODO: Create popup from bottom in conjunction with error boundary to display any errors that occur
 
   return (
     <div className={styles.app}>
