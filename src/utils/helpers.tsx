@@ -11,6 +11,14 @@ export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Eleme
   return itemIndex;
 };
 
+// Divide array into groups according to passed callback
+export function groupBy<T>(array: Array<T>, filter: (value: T, index: number, array: Array<T>) => boolean): [T[], T[]] {
+  let pass: T[] = [];
+  let fail: T[] = [];
+  array.forEach((e, index, array) => (filter(e, index, array) ? pass : fail).push(e));
+  return [pass, fail];
+}
+
 export const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
   // Return if window is invalid
   if (!tab.id) return;

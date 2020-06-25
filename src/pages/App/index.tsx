@@ -1,10 +1,11 @@
 import chromep from 'chrome-promise';
 import React, { useCallback, useEffect, useState } from 'react';
-import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import ContentSection from '../../components/ContentSection';
 import Header from '../../components/Header';
-import TabList from '../../components/TabList';
+import WindowSection from '../../components/WindowSection';
 import { useRovingFocus } from '../../hooks/useRovingFocus';
+import { groupBy } from '../../utils/helpers';
 import styles from './App.module.scss';
 
 const App: React.FC = () => {
@@ -12,8 +13,8 @@ const App: React.FC = () => {
   const [searchDisabledToggle, setSearchDisabledToggle] = useState(false);
   const [allWindows, setAllWindows] = useState<ChromeWindow[]>([]);
 
-  let currentWindow = {} as ChromeWindow;
-  let otherWindows: ChromeWindow[] = [];
+  // Group according to current active window
+  const [currentWindow, otherWindows] = groupBy(allWindows, val => val.isActiveWindow);
 
   // Setup arrow key navigation
   useRovingFocus();
@@ -33,11 +34,6 @@ const App: React.FC = () => {
     });
     setAllWindows(windows);
   };
-
-  if (allWindows.length) {
-    currentWindow = allWindows.find(window => window.isActiveWindow)!;
-    otherWindows = allWindows.filter(window => window.id !== currentWindow.id);
-  }
 
   // On tab moved listener
   useEffect(() => {
@@ -97,7 +93,7 @@ const App: React.FC = () => {
       if (!destination) {
         return;
       }
-      
+
       if (destination.droppableId === source.droppableId && destination.index === source.index) {
         return;
       }
@@ -158,28 +154,10 @@ const App: React.FC = () => {
       <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchDisabledToggle={searchDisabledToggle} />
       <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <ContentSection>
-          <h3>Current window</h3>
-          <Droppable droppableId={`${currentWindow.id}`}>
-            {(provided: DroppableProvided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                <TabList searchTerm={searchTerm} window={currentWindow} />
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          <WindowSection title={'Current window'} searchTerm={searchTerm} windows={currentWindow} />
           {otherWindows.length > 0 && (
             <>
-              <h3>Other windows</h3>
-              {otherWindows.map(window => (
-                <Droppable droppableId={`${window.id}`}>
-                  {(provided: DroppableProvided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      <TabList key={window.id} searchTerm={searchTerm} window={window} />
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              ))}
+              <WindowSection title={'Other windows'} searchTerm={searchTerm} windows={otherWindows} />
             </>
           )}
         </ContentSection>
