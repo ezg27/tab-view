@@ -8,6 +8,8 @@ export const useRovingFocus = (): void => {
 
     const listItems = document.querySelectorAll('li[tabindex="-1"]');
 
+    if (!listItems.length) return;
+
     // Down arrow
     if (e.keyCode === 40) {
       e.preventDefault();
