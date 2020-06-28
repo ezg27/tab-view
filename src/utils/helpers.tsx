@@ -1,6 +1,8 @@
 import chromep from 'chrome-promise';
+import { DraggableLocation, DropResult } from 'react-beautiful-dnd';
+import { mutate } from 'swr';
 
-export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Element>) => {
+export function getItemIndex(activeElement: Element, listItems: NodeListOf<Element>): number {
   let itemIndex = 0;
   for (let [i, value] of listItems.entries()) {
     if (value === activeElement) {
@@ -10,7 +12,26 @@ export const getItemIndex = (activeElement: Element, listItems: NodeListOf<Eleme
   return itemIndex;
 }
 
-export const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> => {
+export async function getWindows(): Promise<ChromeWindow[]> {
+  const currentWindow = await chromep.windows.getCurrent();
+  const windows = (await chromep.windows.getAll({ populate: true })).map(window => {
+    return {
+      ...window,
+      isActiveWindow: window.id === currentWindow.id,
+    } as ChromeWindow;
+  });
+  return windows;
+}
+
+// Divide array into groups according to passed callback
+export function groupBy<T>(array: Array<T>, filter: (value: T, index: number, array: Array<T>) => boolean): [T[], T[]] {
+  let pass: T[] = [];
+  let fail: T[] = [];
+  array.forEach((e, index, array) => (filter(e, index, array) ? pass : fail).push(e));
+  return [pass, fail];
+}
+
+export async function setActiveTab(tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> {
   // Return if window is invalid
   if (!tab.id) return;
 
@@ -26,43 +47,136 @@ export const setActiveTab = async (tab: chrome.tabs.Tab, parentWindow: chrome.wi
 
   // Navigate to tab in current window
   await chromep.tabs.update(tab.id, { active: true });
-};
+}
 
-export const closeTab = async (tab: chrome.tabs.Tab): Promise<void> => {
+export async function closeTab(tab: chrome.tabs.Tab): Promise<void> {
   // Return if window is invalid
   if (!tab.id) return;
 
   // Remove tab
   await chromep.tabs.remove(tab.id);
-};
+}
 
-export const refreshWindow = async (
-  _tabId: number,
-  removeInfo: chrome.tabs.TabRemoveInfo,
-  setCurrentWindow: React.Dispatch<React.SetStateAction<ChromeWindow>>,
-  setOtherWindows: React.Dispatch<React.SetStateAction<ChromeWindow[]>>
-) => {
-  // Get window tab was removed from
-  const refreshedWindow = await chromep.windows.get(removeInfo.windowId, { populate: true });
+export function moveTab(result: DropResult): void {
+  const { destination, source, draggableId } = result;
 
-  // If active window
-  setCurrentWindow(currentWindow =>
-    currentWindow.id === refreshedWindow.id
-      ? ({ ...refreshedWindow, isActiveWindow: true } as ChromeWindow)
-      : currentWindow
-  );
-
-  // If tab closed was last in the window
-  if (!refreshedWindow.tabs?.length) {
-    setOtherWindows(windows => windows.filter(window => window.id !== refreshedWindow.id));
+  if (!destination) {
     return;
   }
 
-  setOtherWindows(windows =>
-    windows.map(window => {
-      return window.id === refreshedWindow.id
-        ? ({ ...refreshedWindow, isActiveWindow: false } as ChromeWindow)
-        : window;
-    })
+  if (destination.droppableId === source.droppableId && destination.index === source.index) {
+    return;
+  }
+
+  mutate(
+    'getWindows',
+    async (prevWindows: ChromeWindow[]) => {
+      if (source.droppableId === destination.droppableId) {
+        return optimisticReorderTabs(prevWindows, destination, source);
+      }
+
+      return optimisticMoveTabBetweenWindows(prevWindows, destination, source);
+    },
+    false
+  );
+
+  chrome.tabs.move(Number(draggableId), {
+    windowId: Number(destination.droppableId),
+    index: destination.index,
+  });
+}
+
+function optimisticReorderTabs(
+  windows: ChromeWindow[],
+  destination: DraggableLocation,
+  source: DraggableLocation
+): ChromeWindow[] | undefined {
+  const window = windows.find(window => window.id === Number(source.droppableId));
+
+  if (!window) {
+    throw new Error('Window could not be found for optimistic reorder.');
+  }
+
+  const newTabList = Array.from(window.tabs!);
+  const movedTab = newTabList.splice(source.index, 1)[0];
+  newTabList.splice(destination.index, 0, movedTab);
+  return windows.map(window => {
+    return window.id === Number(source.droppableId)
+      ? ({
+          ...window,
+          tabs: newTabList,
+        } as ChromeWindow)
+      : window;
+  });
+}
+
+function optimisticMoveTabBetweenWindows(
+  windows: ChromeWindow[],
+  destination: DraggableLocation,
+  source: DraggableLocation
+): ChromeWindow[] {
+  // Optimistic move tab between windows
+  const sourceWindow = windows.find(window => window.id === Number(source.droppableId));
+  const destinationWindow = windows.find(window => window.id === Number(destination.droppableId));
+
+  if (!sourceWindow || !destinationWindow) {
+    throw new Error('Source or destination windows could not be found for optimsitic move between windows.');
+  }
+
+  const newSourceTabList = Array.from(sourceWindow.tabs!);
+  const newDestinationTabList = Array.from(destinationWindow.tabs!);
+
+  const movedTab = newSourceTabList.splice(source.index, 1)[0];
+  newDestinationTabList.splice(destination.index, 0, movedTab);
+
+  return windows.map(window => {
+    return window.id === Number(source.droppableId)
+      ? ({
+          ...window,
+          tabs: newSourceTabList,
+        } as ChromeWindow)
+      : Number(destination.droppableId)
+      ? ({
+          ...window,
+          tabs: newDestinationTabList,
+        } as ChromeWindow)
+      : window;
+  });
+}
+
+// ----- Chrome listeners -----
+
+export const onMovedListener = async (tabId: number, moveInfo: chrome.tabs.TabMoveInfo): Promise<void> => {
+  mutate('getWindows');
+};
+
+export const onAttachedListener = async (tabId: number, attachInfo: chrome.tabs.TabAttachInfo): Promise<void> => {
+  mutate('getWindows');
+};
+
+export const onRemovedListener = async (_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): Promise<void> => {
+  const refreshedWindow = await chromep.windows.get(removeInfo.windowId, {
+    populate: true,
+  });
+
+  mutate(
+    'getWindows',
+    async (prevWindows: ChromeWindow[]) => {
+      // Handle if closed tab was last in window
+      if (!refreshedWindow || !refreshedWindow.tabs?.length) {
+        return prevWindows.filter(window => window.id !== removeInfo.windowId);
+      }
+
+      // Replace stale window with updated
+      return prevWindows.map(window => {
+        return window.id === refreshedWindow.id
+          ? ({
+              ...refreshedWindow,
+              isActiveWindow: window.isActiveWindow,
+            } as ChromeWindow)
+          : window;
+      });
+    },
+    true
   );
 };

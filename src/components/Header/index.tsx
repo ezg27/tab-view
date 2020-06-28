@@ -4,9 +4,10 @@ import styles from './Header.module.scss';
 type HeaderProps = {
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
+  searchDisabledToggle: boolean
 };
 
-const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm }) => {
+const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, searchDisabledToggle }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (inputRef.current) {
@@ -22,6 +23,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm }) => {
         ref={inputRef}
         type='text'
         placeholder='Search...'
+        disabled={searchDisabledToggle}
         value={searchTerm}
         onChange={event => setSearchTerm(event.target.value)}
       />

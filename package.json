@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/popup.html",
-    "build": "rm -rf dist && parcel build src/popup.html"
+    "build": "rm -rf dist && parcel build src/popup.html src/popup.tsx"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.13",
@@ -14,7 +14,9 @@
     "chrome-promise": "^3.0.5",
     "fuse.js": "^5.2.3",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-beautiful-dnd": "^13.0.0",
+    "react-dom": "^16.13.1",
+    "swr": "^0.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
@@ -22,6 +24,7 @@
     "@babel/preset-react": "^7.9.4",
     "@types/chrome": "^0.0.107",
     "@types/react": "^16.9.34",
+    "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-dom": "^16.9.7",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-static-files-copy": "^2.3.1",

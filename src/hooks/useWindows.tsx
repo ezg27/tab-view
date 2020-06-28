@@ -1,37 +1,37 @@
-import chromep from 'chrome-promise';
-import { useEffect, useState } from 'react';
-import { refreshWindow } from '../utils/helpers';
+import { useEffect } from 'react';
+import useSWR from 'swr';
+import { getWindows, groupBy, onAttachedListener, onMovedListener, onRemovedListener } from '../utils/helpers';
 
-export const useWindows = (): [ChromeWindow, ChromeWindow[]] => {
-  const [currentWindow, setCurrentWindow] = useState<ChromeWindow>({} as ChromeWindow);
-  const [otherWindows, setOtherWindows] = useState<ChromeWindow[]>([]);
+export function useWindows() {
+  const { data: windows, error } = useSWR('getWindows', getWindows, {
+    initialData: [] as ChromeWindow[],
+  });
 
-  // Get tabs for all windows
+  // On tab moved listener
   useEffect(() => {
-    const getWindows = async () => {
-      const currentWindow = await chromep.windows.getCurrent({ populate: true });
-      const withActiveFlag: ChromeWindow = { ...currentWindow, isActiveWindow: true };
-      setCurrentWindow(withActiveFlag);
-
-      const otherWindows = (await chromep.windows.getAll({ populate: true }))
-        .filter(windowItem => windowItem.id !== currentWindow.id)
-        .map(window => ({ ...window, isActiveWindow: false } as ChromeWindow));
-      setOtherWindows(otherWindows);
+    chrome.tabs.onMoved.addListener(onMovedListener);
+    return () => {
+      chrome.tabs.onMoved.removeListener(onMovedListener);
     };
-    getWindows();
+  }, []);
+
+  // On tab attached listener
+  useEffect(() => {
+    chrome.tabs.onAttached.addListener(onAttachedListener);
+    return () => {
+      chrome.tabs.onAttached.removeListener(onAttachedListener);
+    };
   }, []);
 
   // On tab removed listener
   useEffect(() => {
-    const onRemovedListener = async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): Promise<void> => {
-      return await refreshWindow(tabId, removeInfo, setCurrentWindow, setOtherWindows);
-    };
-
     chrome.tabs.onRemoved.addListener(onRemovedListener);
     return () => {
       chrome.tabs.onRemoved.removeListener(onRemovedListener);
     };
-  }, [currentWindow, otherWindows]);
+  }, []);
 
-  return [currentWindow, otherWindows];
-};
+  // Group according to current active window
+  const groupedWindows = groupBy(windows!, window => window.isActiveWindow);
+  return { windows: groupedWindows, error };
+}
