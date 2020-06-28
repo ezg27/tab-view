@@ -23,14 +23,11 @@ const App: React.FC = () => {
     setSearchDisabledToggle(state => !state);
   }, []);
 
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      // Re-enable search
-      setSearchDisabledToggle(state => !state);
-      moveTab(result);
-    },
-    []
-  );
+  const onDragEnd = useCallback((result: DropResult) => {
+    // Re-enable search
+    setSearchDisabledToggle(state => !state);
+    moveTab(result);
+  }, []);
 
   const [currentWindow, otherWindows] = windows;
 
@@ -41,9 +38,7 @@ const App: React.FC = () => {
         <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           <WindowSection title={'Current window'} searchTerm={searchTerm} windows={currentWindow} />
           {otherWindows.length > 0 && (
-            <>
-              <WindowSection title={'Other windows'} searchTerm={searchTerm} windows={otherWindows} />
-            </>
+            <WindowSection title={'Other windows'} searchTerm={searchTerm} windows={otherWindows} />
           )}
         </DragDropContext>
       </ContentSection>
