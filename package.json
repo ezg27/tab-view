@@ -15,7 +15,8 @@
     "fuse.js": "^5.2.3",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "swr": "^0.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
