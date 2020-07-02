@@ -1,5 +1,9 @@
 .tabList {
   margin-bottom: 5px;
+  padding: 0.8rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(137, 155, 165, 0.7);
+  background-color: var(--background);
   ul {
     height: 100%;
     display: flex;

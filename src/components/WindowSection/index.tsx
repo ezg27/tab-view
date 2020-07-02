@@ -1,6 +1,6 @@
 import React from 'react';
-import { Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import TabList from '../TabList';
+import styles from './WindowSection.module.scss';
 
 type WindowSectionProps = {
   title: string;
@@ -10,17 +10,10 @@ type WindowSectionProps = {
 
 const WindowSection: React.FC<WindowSectionProps> = ({ title, searchTerm, windows }) => {
   return (
-    <div>
+    <div className={styles.windowSection}>
       <h3>{title}</h3>
       {windows.map(window => (
-        <Droppable droppableId={`${window.id}`}>
-          {(provided: DroppableProvided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              <TabList searchTerm={searchTerm} window={window} />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        <TabList searchTerm={searchTerm} window={window} />
       ))}
     </div>
   );
