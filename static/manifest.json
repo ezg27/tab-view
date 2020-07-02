@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "permissions": [
     "activeTab",
-    "tabs"
+    "tabs",
+    "chrome://favicon/*"
   ],
   "commands": {
     "_execute_browser_action": {
