@@ -5,10 +5,11 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   DraggingStyle,
-  NotDraggingStyle,
+  NotDraggingStyle
 } from 'react-beautiful-dnd';
 import { closeTab, setActiveTab } from '../../utils/helpers';
 import styles from './TabListItem.module.scss';
+import TabFavIcon from '../TabFavIcon';
 
 type TabListItemProps = {
   tab: chrome.tabs.Tab;
@@ -46,6 +47,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           onClick={handleActiveClick}
           onKeyPress={handleKeyPress(handleActiveClick)}
         >
+          <TabFavIcon tab={tab} />
           {tab.pinned && <span># .</span>}
           <p>{tab.title}</p>
           <CloseIcon
