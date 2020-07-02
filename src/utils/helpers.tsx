@@ -33,10 +33,8 @@ export function groupBy<T>(array: Array<T>, filter: (value: T, index: number, ar
 
 export function validateFavIcon(tab: chrome.tabs.Tab): string {
   if (!tab.favIconUrl) {
-    console.log('klasdjfklaj');
     return tab.url === 'chrome-extension://' ? `chrome://favicon/size/16/chrome://extensions/` : '';
   }
-
 
   // Check if tab is the chrome extensions page
   if (tab.favIconUrl === '') {
