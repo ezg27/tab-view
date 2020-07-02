@@ -5,11 +5,11 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   DraggingStyle,
-  NotDraggingStyle
+  NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import { closeTab, setActiveTab } from '../../utils/helpers';
-import styles from './TabListItem.module.scss';
 import TabFavIcon from '../TabFavIcon';
+import styles from './TabListItem.module.scss';
 
 type TabListItemProps = {
   tab: chrome.tabs.Tab;
