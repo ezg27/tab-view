@@ -17,24 +17,23 @@
 
   &:hover {
     cursor: pointer;
-    transition: background-color box-shadow 0.4s ease;
     background-color: #e6e6e6;
     user-select: none;
-    box-shadow: 0 7px 5px -5px rgba(137, 155, 165, 0.5);
+    box-shadow: 0 7px 5px -5px rgba(165, 165, 165, 0.5);
     color: #000000;
   }
 
   &:focus {
-    transition: background-color box-shadow 0.4s ease;
     background-color: #cccccc;
     outline: none;
-    box-shadow: 0 7px 5px -5px rgba(137, 155, 165, 0.5);
+    box-shadow: 0 7px 5px -5px rgba(165, 165, 165, 0.5);
     color: #000000;
   }
 }
 
 .closeIcon {
   opacity: 0.2;
+  margin-left: 0.4rem;
 
   &:hover {
     opacity: 0.8;
@@ -42,4 +41,19 @@
     transform: scale(1.1);
     outline: none;
   }
+}
+
+.pinIcon {
+  color: #4d4d4d;
+  margin-left: 0.4rem;
+}
+
+.speakerIcon {
+  color: #4d4d4d;
+  margin-left: 0.4rem;
+}
+
+.mutedSpeakerIcon {
+  color: #4d4d4d;
+  margin-left: 0.4rem;
 }

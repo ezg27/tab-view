@@ -1,4 +1,7 @@
 import CloseIcon from '@material-ui/icons/Close';
+import RoomIcon from '@material-ui/icons/Room';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import React, { memo } from 'react';
 import {
   Draggable,
@@ -49,8 +52,10 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           onKeyPress={handleKeyPress(handleActiveClick)}
         >
           <TabFavIcon tab={tab} />
-          {tab.pinned && <span># .</span>}
           <p>{tab.title}</p>
+          {tab.audible && <VolumeUpIcon className={styles.speakerIcon} fontSize='small' />}
+          {tab.mutedInfo?.muted && <VolumeOffIcon className={styles.mutedSpeakerIcon} fontSize='small' />}
+          {tab.pinned && <RoomIcon className={styles.pinIcon} fontSize='small' />}
           <CloseIcon
             name='closeIcon'
             className={styles.closeIcon}

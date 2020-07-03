@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/popup.html",
-    "build": "rm -rf dist && parcel build src/popup.html src/popup.tsx"
+    "build": "rm -rf dist && parcel build src/popup.html"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.13",
@@ -22,6 +22,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@types/chrome": "^0.0.107",
     "@types/react": "^16.9.34",
     "@types/react-beautiful-dnd": "^13.0.0",
