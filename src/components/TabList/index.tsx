@@ -22,6 +22,7 @@ const TabList: React.FC<TabListProps> = memo(({ searchTerm, window }) => {
         {(provided: DroppableProvided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             <ul>
+              {result.length === 0 && <span className={styles.emptyListMessage}>Nothing to show...</span>}
               {result.map((tab, index) => (
                 <TabListItem key={tab.id} tab={tab} tabIndex={index} parentWindow={window} />
               ))}

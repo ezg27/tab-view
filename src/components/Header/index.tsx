@@ -1,10 +1,11 @@
+import CloseIcon from '@material-ui/icons/Close';
 import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import styles from './Header.module.scss';
 
 type HeaderProps = {
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
-  searchDisabledToggle: boolean
+  searchDisabledToggle: boolean;
 };
 
 const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, searchDisabledToggle }) => {
@@ -27,7 +28,14 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, searchDisabl
         value={searchTerm}
         onChange={event => setSearchTerm(event.target.value)}
       />
-      <button>O</button>
+      <CloseIcon
+        className={styles.closeIcon}
+        fontSize='default'
+        onClick={e => {
+          e.preventDefault();
+          window.close();
+        }}
+      />
     </div>
   );
 };
