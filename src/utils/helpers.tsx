@@ -154,7 +154,7 @@ function optimisticMoveTabBetweenWindows(
           ...window,
           tabs: newSourceTabList,
         } as ChromeWindow)
-      : Number(destination.droppableId)
+      : window.id === Number(destination.droppableId)
       ? ({
           ...window,
           tabs: newDestinationTabList,
