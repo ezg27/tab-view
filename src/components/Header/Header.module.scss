@@ -10,7 +10,7 @@
   color: var(--text);
   background-color: var(--background);
   border-bottom: 1px solid #eeeeee;
-  box-shadow: 0 4px 4px -4px #c0c0c0;
+  box-shadow: 0 4px 4px -4px #757575;
   padding: 0 1rem;
 
   input {
@@ -18,5 +18,17 @@
     padding: 0.2rem 0.4rem;
     border: 1px solid var(--secondary);
     border-radius: 0.3rem;
+  }
+
+  .closeIcon {
+    opacity: 0.2;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.8;
+      transition: all 0.2s ease-in-out;
+      transform: scale(1.1);
+      outline: none;
+    }
   }
 }

@@ -1,7 +1,7 @@
 import CloseIcon from '@material-ui/icons/Close';
 import RoomIcon from '@material-ui/icons/Room';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import React, { memo } from 'react';
 import {
   Draggable,
@@ -32,7 +32,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
   const getStyle = (style: DraggingStyle | NotDraggingStyle | undefined, snapshot: DraggableStateSnapshot) => {
     return {
       ...style,
-      // Fix glitchy grab hand cursor when hovering on the edge of tab list item
+      // Fix for glitchy grab hand cursor when hovering on the edge of tab list item
       cursor: snapshot.isDragging ? '-webit-grabbing' : 'pointer',
       backgroundColor: snapshot.isDragging ? '#cccccc' : '',
     };
