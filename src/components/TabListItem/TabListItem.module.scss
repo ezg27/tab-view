@@ -2,8 +2,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.4rem;
+  padding: 0.5rem;
   border-radius: 5px;
+  color: var(--text);
 
   p {
     overflow: hidden;
@@ -11,19 +12,24 @@
     white-space: nowrap;
     flex: 1;
     height: 100%;
+    margin-left: 0.4rem;
   }
 
   &:hover {
     cursor: pointer;
-    transition: background-color 0.4s ease;
+    transition: background-color box-shadow 0.4s ease;
     background-color: #e6e6e6;
     user-select: none;
+    box-shadow: 0 7px 5px -5px rgba(137, 155, 165, 0.5);
+    color: #000000;
   }
 
   &:focus {
-    transition: background-color 0.4s ease;
+    transition: background-color box-shadow 0.4s ease;
     background-color: #cccccc;
     outline: none;
+    box-shadow: 0 7px 5px -5px rgba(137, 155, 165, 0.5);
+    color: #000000;
   }
 }
 

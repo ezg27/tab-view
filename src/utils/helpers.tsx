@@ -31,6 +31,25 @@ export function groupBy<T>(array: Array<T>, filter: (value: T, index: number, ar
   return [pass, fail];
 }
 
+export function validateFavIcon(tab: chrome.tabs.Tab): string {
+  if (!tab.favIconUrl) {
+    return tab.url === 'chrome://extensions/' ? `chrome://favicon/size/16/chrome://extensions/` : '';
+  }
+
+  // Check if tab is the chrome extensions page
+  if (tab.favIconUrl === '') {
+  }
+
+  // Check if tab is for another chrome extension
+  if (tab.favIconUrl.indexOf('chrome://favicon/') === -1 && tab.favIconUrl.indexOf('chrome-extension://') === -1) {
+    // Tab is a normal url
+    return tab.favIconUrl;
+  }
+
+  // Add necessary prefix to obtain favicon for chrome extension
+  return `chrome://favicon/${tab.favIconUrl}`;
+}
+
 export async function setActiveTab(tab: chrome.tabs.Tab, parentWindow: chrome.windows.Window): Promise<void> {
   // Return if window is invalid
   if (!tab.id) return;
@@ -135,7 +154,7 @@ function optimisticMoveTabBetweenWindows(
           ...window,
           tabs: newSourceTabList,
         } as ChromeWindow)
-      : Number(destination.droppableId)
+      : window.id === Number(destination.droppableId)
       ? ({
           ...window,
           tabs: newDestinationTabList,

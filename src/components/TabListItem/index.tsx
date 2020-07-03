@@ -8,6 +8,7 @@ import {
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import { closeTab, setActiveTab } from '../../utils/helpers';
+import TabFavIcon from '../TabFavIcon';
 import styles from './TabListItem.module.scss';
 
 type TabListItemProps = {
@@ -30,6 +31,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
       ...style,
       // Fix glitchy grab hand cursor when hovering on the edge of tab list item
       cursor: snapshot.isDragging ? '-webit-grabbing' : 'pointer',
+      backgroundColor: snapshot.isDragging ? '#cccccc' : '',
     };
   };
 
@@ -46,6 +48,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           onClick={handleActiveClick}
           onKeyPress={handleKeyPress(handleActiveClick)}
         >
+          <TabFavIcon tab={tab} />
           {tab.pinned && <span># .</span>}
           <p>{tab.title}</p>
           <CloseIcon
