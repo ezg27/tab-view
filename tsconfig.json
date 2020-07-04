@@ -9,10 +9,12 @@
     "moduleResolution": "node",
     "target": "es5",
     "allowJs": true,
+    "esModuleInterop": true,
     "jsx": "react",
     "lib": ["es6", "dom", "dom.iterable"],
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true
   },
-  "include": ["types/scss-env.d.ts", "./src/**/*.tsx", "types/index.d.ts"]
+  "include": ["src/types/scss-env.d.ts", "./src/**/*.tsx", "src/types/index.d.ts"],
+  "exclude": ["node_modules", "**/*.spec.tsx"]
 }

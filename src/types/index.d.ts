@@ -3,3 +3,4 @@ interface ChromeWindow extends chrome.windows.Window {
 }
 
 type TabClickHandler = () => Promise<void>;
+

@@ -1,12 +1,13 @@
 {
   "name": "tab-view",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "src/popup.html",
   "author": "ezg27",
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/popup.html",
-    "build": "rm -rf dist && parcel build src/popup.html"
+    "build": "rm -rf dist && parcel build src/popup.html",
+    "test": "jest"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.13",
@@ -23,14 +24,20 @@
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "@babel/preset-typescript": "^7.10.4",
+    "@testing-library/jest-dom": "^5.11.0",
+    "@testing-library/react": "^10.4.3",
     "@types/chrome": "^0.0.107",
+    "@types/jest": "^26.0.3",
     "@types/react": "^16.9.34",
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-dom": "^16.9.7",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^26.1.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-static-files-copy": "^2.3.1",
     "postcss-modules": "^2.0.0",
     "sass": "^1.26.5",
+    "ts-jest": "^26.1.1",
     "typescript": "^3.8.3"
   }
 }

@@ -30,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, searchDisabl
       />
       <CloseIcon
         className={styles.closeIcon}
+        data-testid='closeButton'
         fontSize='default'
         onClick={e => {
           e.preventDefault();
