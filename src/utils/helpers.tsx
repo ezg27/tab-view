@@ -95,7 +95,7 @@ export function moveTab(result: DropResult): void {
     false
   );
 
-  chrome.tabs.move(Number(draggableId), {
+  chromep.tabs.move(Number(draggableId), {
     windowId: Number(destination.droppableId),
     index: destination.index,
   });

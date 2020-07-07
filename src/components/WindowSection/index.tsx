@@ -12,6 +12,7 @@ const WindowSection: React.FC<WindowSectionProps> = ({ title, searchTerm, window
   return (
     <div className={styles.windowSection}>
       <h3>{title}</h3>
+      {windows.length === 0 && <span className={styles.emptyListMessage}>Nothing to show...</span>}
       {windows.map(window => (
         <TabList searchTerm={searchTerm} window={window} />
       ))}
