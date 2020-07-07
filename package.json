@@ -37,6 +37,7 @@
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-static-files-copy": "^2.3.1",
     "postcss-modules": "^2.0.0",
+    "prettier": "^2.0.5",
     "sass": "^1.26.5",
     "ts-jest": "^26.1.1",
     "typescript": "^3.8.3"
