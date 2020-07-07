@@ -15,6 +15,6 @@
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true
   },
-  "include": ["./src/types/scss-env.d.ts", "./src/**/*.tsx", "./src/types/index.d.ts"],
+  "include": ["./src/types/scss-env.d.ts", "./src/**/*.ts", "./src/**/*.tsx", "./src/types/index.d.ts"],
   "exclude": ["./node_modules"]
 }

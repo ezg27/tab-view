@@ -50,6 +50,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           tabIndex={-1}
           onClick={handleActiveClick}
           onKeyPress={handleKeyPress(handleActiveClick)}
+          data-testid='tab-list-item'
         >
           <TabFavIcon tab={tab} />
           <p>{tab.title}</p>

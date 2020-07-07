@@ -25,6 +25,8 @@ module.exports = {
   // should contain `test` or `spec`.
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
 
+  testPathIgnorePatterns: ["src/__tests__/testData"],
+
   // Module file extensions for importing
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 };
