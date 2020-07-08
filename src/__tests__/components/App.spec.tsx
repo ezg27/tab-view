@@ -1,15 +1,21 @@
-import { render, fireEvent } from "@testing-library/react";
-import React from "react";
-import { mocked } from "ts-jest/utils";
-import { useWindows } from "../../hooks/useWindows";
-import App from "../../pages/App";
-import { mockWindow1, mockWindow2, mockWindow3 } from "../testData/mockWindows";
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { chrome } from 'jest-chrome';
+import React from 'react';
+import useSWR, { mutate, responseInterface } from 'swr';
+import { mocked } from 'ts-jest/utils';
+import App from '../../pages/App';
+import { mockWindow1, mockWindow2, mockWindow3 } from '../testData/mockWindows';
 
-jest.mock("../../hooks/useWindows");
+// Mocks
+jest.mock('swr');
 
-test("should render Error component", () => {
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
+test('should render Error component', () => {
   // Arrange
-  mocked(useWindows).mockReturnValueOnce({ windows: [[], []], error: "Error" });
+  mocked(useSWR).mockReturnValueOnce({ data: [], error: 'Error' } as responseInterface<any, any>);
   const { getByText } = render(<App />);
 
   // Assert
@@ -17,13 +23,10 @@ test("should render Error component", () => {
   expect(errorComponent).toBeInTheDocument();
 });
 
-test("should render single empty list if no tabs to show", () => {
+test('should render single empty list if no tabs to show', () => {
   // Arrange
-  mocked(useWindows).mockReturnValueOnce({
-    windows: [[] as ChromeWindow[], [] as ChromeWindow[]],
-    error: "",
-  });
-  const { queryByText, debug } = render(<App />);
+  mocked(useSWR).mockReturnValueOnce({ data: [], error: '' } as responseInterface<any, any>);
+  const { queryByText } = render(<App />);
 
   // Assert
   const currentWindow = queryByText(/current window/i);
@@ -38,70 +41,87 @@ test("should render single empty list if no tabs to show", () => {
   expect(otherWindowList).not.toBeInTheDocument();
 });
 
-test("should render list of tabs for current window", () => {
+test('should render list of tabs for current window', () => {
   // Arrange
-  mocked(useWindows).mockReturnValueOnce({
-    windows: [[mockWindow1], [] as ChromeWindow[]],
-    error: "",
-  });
+  mocked(useSWR).mockReturnValueOnce({ data: [mockWindow1], error: '' } as responseInterface<any, any>);
   const { getAllByTestId, queryByText } = render(<App />);
 
   // Assert
-  const tabsTitles = getAllByTestId("tab-list-item").map(
-    (tab) => tab.textContent
-  );
+  const tabsTitles = getAllByTestId('tab-list-item').map(tab => tab.textContent);
   expect(tabsTitles).toMatchInlineSnapshot(`
-    Array [
-      "Test tab 1",
-      "Test tab 2",
-    ]
-  `);
+      Array [
+        "Test tab 1",
+        "Test tab 2",
+      ]
+    `);
 
   // Check empty other windows list is not present
   const emptyWindowList = queryByText(/other windows/i);
   expect(emptyWindowList).not.toBeInTheDocument();
 });
 
-test("should render current and other windows", () => {
+test('should render current and other windows', () => {
   // Arrange
-  mocked(useWindows).mockReturnValueOnce({
-    windows: [[mockWindow1], [mockWindow2, mockWindow3]],
-    error: "",
-  });
+  mocked(useSWR).mockReturnValueOnce({
+    data: [mockWindow1, mockWindow2, mockWindow3],
+    error: '',
+  } as responseInterface<any, any>);
   const { getAllByTestId, queryByText } = render(<App />);
 
   // Assert
   const otherWindowList = queryByText(/other windows/i);
   expect(otherWindowList).toBeInTheDocument();
 
-  const otherWindowsTabTitles = getAllByTestId("tab-list-item").map(
-    (tab) => tab.textContent
-  );
+  const otherWindowsTabTitles = getAllByTestId('tab-list-item').map(tab => tab.textContent);
   expect(otherWindowsTabTitles).toMatchInlineSnapshot(`
-    Array [
-      "Test tab 1",
-      "Test tab 2",
-      "Test tab 3",
-      "Test tab 4",
-      "Test tab 5",
-      "Test tab 6",
-    ]
-  `);
+      Array [
+        "Test tab 1",
+        "Test tab 2",
+        "Test tab 3",
+        "Test tab 4",
+        "Test tab 5",
+        "Test tab 6",
+      ]
+    `);
 });
 
-test('should disable search box on drag start', () => {
+test('Tab moved within window and search box disabled on drag', async () => {
   // Arrange
-  mocked(useWindows).mockReturnValueOnce({
-    windows: [[mockWindow1], [mockWindow2, mockWindow3]],
+  mocked(useSWR).mockReturnValue({
+    data: [mockWindow1],
     error: '',
-  });
-  const { getByPlaceholderText, getByText } = render(<App />);
+  } as responseInterface<any, any>);
 
-  // Act
-  const searchBox = getByPlaceholderText(/search/i);
+  const { getByPlaceholderText, getAllByTestId } = render(<App />);
+
+  const searchBox = getByPlaceholderText(/search.../i);
+  const firstTab = getAllByTestId('tab-list-item')[0];
   expect(searchBox).not.toBeDisabled();
 
-  const tab = getByText(/test tab 1/i);
-  fireEvent.drag
-  // expect(searchBox).toBeDisabled();
-})
+  // Begin dragging tab list item
+  act(() => {
+    fireEvent.keyDown(firstTab, { keyCode: 32 });
+  });
+
+  // Assert search box disabled
+  await waitFor(() => expect(searchBox).toBeDisabled());
+
+  // Move tab down one position
+  act(() => {
+    fireEvent.keyDown(firstTab, { keyCode: 40 });
+  });
+
+  // End drag
+  act(() => {
+    fireEvent.keyDown(firstTab, { keyCode: 32 });
+  });
+
+  // Assert search box no longer disabled
+  await waitFor(() => expect(searchBox).not.toBeDisabled());
+
+  // Assert optimistic mutation has been called
+  expect(mutate).toHaveBeenCalledTimes(1);
+
+  // Assert chrome API move method has been called
+  expect(chrome.tabs.move).toHaveBeenCalledTimes(1);
+});
