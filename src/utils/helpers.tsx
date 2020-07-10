@@ -101,7 +101,7 @@ export function moveTab(result: DropResult): void {
   });
 }
 
-function optimisticReorderTabs(
+export function optimisticReorderTabs(
   windows: ChromeWindow[],
   destination: DraggableLocation,
   source: DraggableLocation
@@ -125,7 +125,7 @@ function optimisticReorderTabs(
   });
 }
 
-function optimisticMoveTabBetweenWindows(
+export function optimisticMoveTabBetweenWindows(
   windows: ChromeWindow[],
   destination: DraggableLocation,
   source: DraggableLocation
