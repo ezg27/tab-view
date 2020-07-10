@@ -7,6 +7,12 @@ import { mocked } from 'ts-jest/utils';
 import App from '../../pages/App';
 import { mockWindow1, mockWindow2, mockWindow3 } from '../testData/mockWindows';
 
+// Key types
+const spaceKey = { keyCode: 32 };
+const arrowUpKey = { keyCode: 38 };
+const arrowDownKey = { keyCode: 40 };
+const enterKey = { keyCode: 13 };
+
 // Mocks
 jest.mock('swr');
 
@@ -51,7 +57,7 @@ test('should render single empty list if no tabs to show', () => {
 test('should render list of tabs for current window', () => {
   // Arrange
   mocked(useSWR).mockReturnValueOnce({
-    data: [mockWindow1],
+    data: [{ ...mockWindow1 }],
     error: '',
   } as responseInterface<any, any>);
   const { getAllByTestId, queryByText } = render(<App />);
@@ -73,7 +79,7 @@ test('should render list of tabs for current window', () => {
 test('should render current and other windows', () => {
   // Arrange
   mocked(useSWR).mockReturnValueOnce({
-    data: [mockWindow1, mockWindow2, mockWindow3],
+    data: [{ ...mockWindow1 }, { ...mockWindow2 }, { ...mockWindow3 }],
     error: '',
   } as responseInterface<any, any>);
   const { getAllByTestId, queryByText } = render(<App />);
@@ -98,11 +104,11 @@ test('should render current and other windows', () => {
 test('should filter displayed tabs on search', () => {
   // Arrange
   mocked(useSWR).mockReturnValue({
-    data: [mockWindow1],
+    data: [{ ...mockWindow1 }],
     error: '',
   } as responseInterface<any, any>);
 
-  const { getByPlaceholderText, getAllByTestId, queryByText } = render(<App />);
+  const { getByPlaceholderText, getAllByTestId } = render(<App />);
 
   const tabsTitles = getAllByTestId('tab-list-item').map(tab => tab.textContent);
   expect(tabsTitles).toMatchInlineSnapshot(`
@@ -128,7 +134,7 @@ test('should filter displayed tabs on search', () => {
 test('Tab moved within window and search box disabled on drag', async () => {
   // Arrange
   mocked(useSWR).mockReturnValue({
-    data: [mockWindow1],
+    data: [{ ...mockWindow1 }],
     error: '',
   } as responseInterface<any, any>);
 
@@ -140,7 +146,7 @@ test('Tab moved within window and search box disabled on drag', async () => {
 
   // Begin dragging tab list item
   act(() => {
-    fireEvent.keyDown(firstTab, { keyCode: 32 });
+    fireEvent.keyDown(firstTab, spaceKey);
   });
 
   // Assert search box disabled
@@ -148,12 +154,12 @@ test('Tab moved within window and search box disabled on drag', async () => {
 
   // Move tab down one position
   act(() => {
-    fireEvent.keyDown(firstTab, { keyCode: 40 });
+    fireEvent.keyDown(firstTab, arrowDownKey);
   });
 
   // End drag
   act(() => {
-    fireEvent.keyDown(firstTab, { keyCode: 32 });
+    fireEvent.keyDown(firstTab, spaceKey);
   });
 
   // Assert search box no longer disabled
@@ -170,10 +176,53 @@ test('Tab moved within window and search box disabled on drag', async () => {
   });
 });
 
+test('Tab moved back to original position within window', async () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [{ ...mockWindow1 }],
+    error: '',
+  } as responseInterface<any, any>);
+
+  const { getByPlaceholderText, getAllByTestId } = render(<App />);
+
+  const searchBox = getByPlaceholderText(/search.../i);
+  const firstTab = getAllByTestId('tab-list-item')[0];
+  expect(searchBox).not.toBeDisabled();
+
+  // Begin dragging tab list item
+  act(() => {
+    fireEvent.keyDown(firstTab, spaceKey);
+  });
+
+  // Assert search box disabled
+  await waitFor(() => expect(searchBox).toBeDisabled());
+
+  // Move tab down one position
+  act(() => {
+    fireEvent.keyDown(firstTab, arrowDownKey);
+  });
+
+  // Move up one position
+  act(() => {
+    fireEvent.keyDown(firstTab, arrowUpKey);
+  });
+
+  // End drag
+  act(() => {
+    fireEvent.keyDown(firstTab, spaceKey);
+  });
+
+  // Assert search box no longer disabled
+  await waitFor(() => expect(searchBox).not.toBeDisabled());
+
+  // Assert no action has been taken as tab has not moved positions
+  expect(mutate).not.toHaveBeenCalled();
+});
+
 test('should select another tab in the same window', async () => {
   // Arrange
   mocked(useSWR).mockReturnValue({
-    data: [mockWindow1],
+    data: [{ ...mockWindow1 }],
     error: '',
   } as responseInterface<any, any>);
 
@@ -181,7 +230,7 @@ test('should select another tab in the same window', async () => {
   chrome.windows.getCurrent.mockImplementation(
     // @ts-ignore - Typescript not picking up callback overload that accepts
     // just callback, defaults instead to signature (getInfo: chrome.windows.GetInfo, callback...) etc.
-    (callback: (window: chrome.windows.Window) => void) => callback(mockWindow1)
+    (callback: (window: chrome.windows.Window) => void) => callback({ ...mockWindow1 })
   );
 
   const { getAllByTestId } = render(<App />);
@@ -189,7 +238,7 @@ test('should select another tab in the same window', async () => {
   const nonActiveTab = getAllByTestId('tab-list-item')[1];
 
   act(() => {
-    fireEvent.keyPress(nonActiveTab, { keyCode: 13 });
+    fireEvent.keyPress(nonActiveTab, enterKey);
   });
 
   const expectedTabId = mockWindow1.tabs![1].id;
@@ -202,7 +251,7 @@ test('should select another tab in the same window', async () => {
 test('should select another tab in a different window', async () => {
   // Arrange
   mocked(useSWR).mockReturnValue({
-    data: [mockWindow1, mockWindow2],
+    data: [{ ...mockWindow1 }, { ...mockWindow2 }],
     error: '',
   } as responseInterface<any, any>);
 
@@ -210,12 +259,12 @@ test('should select another tab in a different window', async () => {
   chrome.windows.getCurrent.mockImplementation(
     // @ts-ignore - Typescript is not recognizing the function overload that accepts
     // just a callback, defaults instead to other signature (getInfo: chrome.windows.GetInfo, callback...) etc.
-    (callback: (window: chrome.windows.Window) => void) => callback(mockWindow1)
+    (callback: (window: chrome.windows.Window) => void) => callback({ ...mockWindow1 })
   );
 
   chrome.windows.update.mockImplementation(
     (windowId: number, updateInfo: chrome.windows.UpdateInfo, callback?: (window: chrome.windows.Window) => void) =>
-      callback!(mockWindow2)
+      callback!({ ...mockWindow2 })
   );
 
   // Mock window close method
@@ -226,9 +275,7 @@ test('should select another tab in a different window', async () => {
   const tabInOtherWindow = getAllByTestId('tab-list-item')[2];
 
   act(() => {
-    fireEvent.keyPress(tabInOtherWindow, {
-      keyCode: 13,
-    });
+    fireEvent.keyPress(tabInOtherWindow, enterKey);
   });
 
   const expectedWindowId = mockWindow2.id;
@@ -245,7 +292,7 @@ test('should select another tab in a different window', async () => {
 test('should close tab', () => {
   // Arrange
   mocked(useSWR).mockReturnValue({
-    data: [mockWindow1],
+    data: [{ ...mockWindow1 }],
     error: '',
   } as responseInterface<any, any>);
 
@@ -266,4 +313,71 @@ test('should close tab', () => {
   // Assert
   const expectedTabId = mockWindow1.tabs![0].id;
   expect(chromep.tabs.remove).toHaveBeenCalledWith(expectedTabId);
+});
+
+test('should call onMovedListener when move event fired', () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [{ ...mockWindow1 }],
+    error: '',
+  } as responseInterface<any, any>);
+
+  render(<App />);
+
+  // Assert onMovedListener has been assigned
+  expect(chrome.tabs.onMoved.hasListeners()).toBe(true);
+
+  chrome.tabs.onMoved.callListeners(
+    123, // tabId
+    {} as chrome.tabs.TabMoveInfo // moveInfo
+  );
+
+  expect(mutate).toHaveBeenCalledTimes(1);
+});
+
+test('should call onAttachedListener when attach event fired', () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [{ ...mockWindow1 }],
+    error: '',
+  } as responseInterface<any, any>);
+
+  render(<App />);
+
+  // Assert onMovedListener has been assigned
+  expect(chrome.tabs.onAttached.hasListeners()).toBe(true);
+
+  chrome.tabs.onAttached.callListeners(
+    123, // tabId
+    {} as chrome.tabs.TabAttachInfo // attachInfo
+  );
+
+  expect(mutate).toHaveBeenCalledTimes(1);
+});
+
+test('should call onRemovedListener when remove event fired', async () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [{ ...mockWindow1 }],
+    error: '',
+  } as responseInterface<any, any>);
+
+  chrome.windows.get.mockImplementation(
+    (windowId: number, removeInfo: chrome.windows.GetInfo, callback: (window: chrome.windows.Window) => void) =>
+      callback({ ...mockWindow1 })
+  );
+
+  render(<App />);
+
+  // Assert onMovedListener has been assigned
+  expect(chrome.tabs.onRemoved.hasListeners()).toBe(true);
+
+  chrome.tabs.onRemoved.callListeners(
+    123, // tabId
+    { windowId: 456 } as chrome.tabs.TabRemoveInfo // attachInfo
+  );
+
+  expect(chrome.windows.get).toHaveBeenCalledWith(456, { populate: true }, expect.any(Function));
+
+  await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
 });
