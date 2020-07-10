@@ -38,7 +38,7 @@ export function validateFavIcon(tab: chrome.tabs.Tab): string {
 
   // Check if tab is for another chrome extension
   if (tab.favIconUrl.indexOf('chrome://favicon/') === -1 && tab.favIconUrl.indexOf('chrome-extension://') === -1) {
-    // Tab is a normal url
+    // Tab is a regular url
     return tab.favIconUrl;
   }
 
@@ -95,7 +95,7 @@ export function moveTab(result: DropResult): void {
     false
   );
 
-  chromep.tabs.move(Number(draggableId), {
+  chrome.tabs.move(Number(draggableId), {
     windowId: Number(destination.droppableId),
     index: destination.index,
   });

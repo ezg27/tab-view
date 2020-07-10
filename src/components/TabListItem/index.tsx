@@ -59,6 +59,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           {tab.pinned && <RoomIcon className={styles.pinIcon} fontSize='small' />}
           <CloseIcon
             name='closeIcon'
+            data-testid='tab-close-icon'
             className={styles.closeIcon}
             tabIndex={-1}
             fontSize='small'

@@ -5,6 +5,7 @@ import useSWR, { mutate, responseInterface } from 'swr';
 import { mocked } from 'ts-jest/utils';
 import App from '../../pages/App';
 import { mockWindow1, mockWindow2, mockWindow3 } from '../testData/mockWindows';
+import chromep from 'chrome-promise'
 
 // Mocks
 jest.mock('swr');
@@ -123,5 +124,104 @@ test('Tab moved within window and search box disabled on drag', async () => {
   expect(mutate).toHaveBeenCalledTimes(1);
 
   // Assert chrome API move method has been called
-  expect(chrome.tabs.move).toHaveBeenCalledTimes(1);
+  // expect(chrome.tabs.move.withArgs(1877, { index: 1, windowId: 56 }).calledOnce).toBe(true);
+  expect(chrome.tabs.move).toHaveBeenCalledWith(1877, { index: 1, windowId: 56 });
+});
+
+test('should select another tab in the same window', async () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [mockWindow1],
+    error: '',
+  } as responseInterface<any, any>);
+
+  // Configure to return current active window
+  chrome.windows.getCurrent.mockImplementation(
+    // @ts-ignore - Typescript not picking up callback overload that accepts
+    // just callback, defaults instead to signature (getInfo: chrome.windows.GetInfo, callback...) etc.
+    (callback: (window: chrome.windows.Window) => void) => callback(mockWindow1)
+  );
+
+  const { getAllByTestId } = render(<App />);
+
+  const nonActiveTab = getAllByTestId('tab-list-item')[1];
+
+  act(() => {
+    fireEvent.keyPress(nonActiveTab, { keyCode: 13 });
+  });
+
+  const expectedTabId = mockWindow1.tabs![1].id;
+
+  // Assert chrome.update method has been called with selected tab id
+  await waitFor(() => expect(chrome.windows.getCurrent).toHaveBeenCalled());
+  expect(chrome.tabs.update).toHaveBeenCalledWith(expectedTabId, { active: true }, expect.any(Function));
+});
+
+test('should select another tab in a different window', async () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [mockWindow1, mockWindow2],
+    error: '',
+  } as responseInterface<any, any>);
+
+  // Configure to return current active window
+  chrome.windows.getCurrent.mockImplementation(
+    // @ts-ignore - Typescript is not recognizing the function overload that accepts
+    // just a callback, defaults instead to other signature (getInfo: chrome.windows.GetInfo, callback...) etc.
+    (callback: (window: chrome.windows.Window) => void) => callback(mockWindow1)
+  );
+
+  chrome.windows.update.mockImplementation(
+    (windowId: number, updateInfo: chrome.windows.UpdateInfo, callback?: (window: chrome.windows.Window) => void) =>
+      callback!(mockWindow2)
+  );
+
+  // Mock window close method
+  window.close = jest.fn();
+
+  const { getAllByTestId } = render(<App />);
+
+  const tabInOtherWindow = getAllByTestId('tab-list-item')[2];
+
+  act(() => {
+    fireEvent.keyPress(tabInOtherWindow, {
+      keyCode: 13,
+    });
+  });
+
+  const expectedWindowId = mockWindow2.id;
+
+  // Assert chrome.update method has been called with id of new window
+  // to be focused
+  await waitFor(() => expect(chrome.windows.getCurrent).toHaveBeenCalled());
+  await waitFor(() =>
+    expect(chrome.windows.update).toHaveBeenCalledWith(expectedWindowId, { focused: true }, expect.any(Function))
+  );
+  expect(window.close).toHaveBeenCalledTimes(1);
+});
+
+test('should close tab', () => {
+  // Arrange
+  mocked(useSWR).mockReturnValue({
+    data: [mockWindow1],
+    error: '',
+  } as responseInterface<any, any>);
+
+  // chrome.tabs.remove implmentation is missing from jest-chrome, so
+  // mocking chromep implementation just for this test
+  // Raising issue on jest-chrome library
+  chromep.tabs.remove = jest.fn();
+
+  const { getAllByTestId } = render(<App />);
+
+  const tabToClose = getAllByTestId('tab-close-icon')[0];
+
+  // Act
+  act(() => {
+    fireEvent.click(tabToClose);
+  });
+
+  // Assert
+  const expectedTabId = mockWindow1.tabs![0].id;
+  expect(chromep.tabs.remove).toHaveBeenCalledWith(expectedTabId);
 });

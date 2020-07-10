@@ -3,6 +3,12 @@ module.exports = {
   // `<rootDir>` is a token Jest substitutes
   roots: ['<rootDir>/src'],
 
+  // globals: {
+  //   'ts-jest': {
+  //     diagnostics: false,
+  //   },
+  // },
+
   testEnvironment: 'jsdom',
 
   // Jest transformations -- this adds support for TypeScript
@@ -25,7 +31,7 @@ module.exports = {
   // should contain `test` or `spec`.
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
 
-  testPathIgnorePatterns: ["src/__tests__/testData"],
+  testPathIgnorePatterns: ['src/__tests__/testData'],
 
   // Module file extensions for importing
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
