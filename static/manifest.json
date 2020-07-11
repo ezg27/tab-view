@@ -2,6 +2,12 @@
   "name": "TabView",
   "version": "0.0.1",
   "manifest_version": 2,
+  "icons": {
+    "16": "images/tabview16.png",
+    "32": "images/tabview32.png",
+    "48": "images/tabview48.png",
+    "128": "images/tabview128.png"
+  },
   "permissions": [
     "activeTab",
     "tabs",

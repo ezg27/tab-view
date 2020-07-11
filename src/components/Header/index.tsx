@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, searchDisabl
 
   return (
     <div className={styles.header}>
-      <span>icon</span>
+      <img src="images/tabview128.png" alt="logo" style={{ width: '32px' }}/>
       <input
         id='searchBox'
         ref={inputRef}
