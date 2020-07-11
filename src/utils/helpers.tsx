@@ -38,7 +38,7 @@ export function validateFavIcon(tab: chrome.tabs.Tab): string {
 
   // Check if tab is for another chrome extension
   if (tab.favIconUrl.indexOf('chrome://favicon/') === -1 && tab.favIconUrl.indexOf('chrome-extension://') === -1) {
-    // Tab is a normal url
+    // Tab is a regular url
     return tab.favIconUrl;
   }
 
@@ -101,7 +101,7 @@ export function moveTab(result: DropResult): void {
   });
 }
 
-function optimisticReorderTabs(
+export function optimisticReorderTabs(
   windows: ChromeWindow[],
   destination: DraggableLocation,
   source: DraggableLocation
@@ -125,7 +125,7 @@ function optimisticReorderTabs(
   });
 }
 
-function optimisticMoveTabBetweenWindows(
+export function optimisticMoveTabBetweenWindows(
   windows: ChromeWindow[],
   destination: DraggableLocation,
   source: DraggableLocation

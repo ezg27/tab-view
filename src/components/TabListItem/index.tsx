@@ -50,6 +50,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           tabIndex={-1}
           onClick={handleActiveClick}
           onKeyPress={handleKeyPress(handleActiveClick)}
+          data-testid='tab-list-item'
         >
           <TabFavIcon tab={tab} />
           <p>{tab.title}</p>
@@ -58,6 +59,7 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
           {tab.pinned && <RoomIcon className={styles.pinIcon} fontSize='small' />}
           <CloseIcon
             name='closeIcon'
+            data-testid='tab-close-icon'
             className={styles.closeIcon}
             tabIndex={-1}
             fontSize='small'
