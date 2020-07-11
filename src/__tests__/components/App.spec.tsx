@@ -20,17 +20,32 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-test('should render Error component', () => {
+test('should render Error component and refresh on button click', async () => {
   // Arrange
-  mocked(useSWR).mockReturnValueOnce({
-    data: [],
-    error: 'Error',
-  } as responseInterface<any, any>);
-  const { getByText } = render(<App />);
+  mocked(useSWR)
+    .mockReturnValueOnce({
+      data: [],
+      error: 'Error',
+    } as responseInterface<any, any>)
+    .mockReturnValueOnce({
+      data: [{ ...mockWindow1 }],
+      error: '',
+    } as responseInterface<any, any>);
 
-  // Assert
-  const errorComponent = getByText(/error/i);
+  const { getByText, getByRole, getAllByTestId } = render(<App />);
+
+  // Assert error fallback rendered
+  const errorComponent = getByText(/oops, something went wrong!/i);
   expect(errorComponent).toBeInTheDocument();
+
+  const refreshButton = getByRole('button');
+
+  act(() => {
+    fireEvent.click(refreshButton);
+  });
+
+  // Wait then assert that tab list has refreshed correctly
+  await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
 });
 
 test('should render single empty list if no tabs to show', () => {
