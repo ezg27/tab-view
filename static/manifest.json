@@ -22,7 +22,7 @@
     }
   },
   "browser_action": {
-    "default_title": "Tab View",
+    "default_title": "TabView",
     "default_popup": "popup.html"
   }
 }
