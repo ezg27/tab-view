@@ -8,16 +8,36 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text);
-  background-color: var(--background);
-  border-bottom: 1px solid #eeeeee;
-  box-shadow: 0 4px 4px -4px #757575;
+  background-color: #ffffff;
+  transition: box-shadow 0.2s ease-in-out;
   padding: 0 1rem;
 
+  .searchContainer {
+    position: relative;
+  }
+
   input {
-    width: 13rem;
-    padding: 0.2rem 0.4rem;
-    border: 1px solid var(--secondary);
-    border-radius: 0.3rem;
+    width: 14rem;
+    padding: 0.3rem 0.6rem;
+    border: none;
+    background-color: #ededee;
+    border-radius: 8px;
+    text-indent: 26px;
+    transition: box-shadow 0.1s ease-in-out;
+    box-shadow: 0 3px 3px -2px #a7a7a7;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 6px 6px -4px #c0c0c0;
+    }
+  }
+
+  .searchIcon {
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    font-size: 22px;
+    color: grey;
   }
 
   .closeIcon {

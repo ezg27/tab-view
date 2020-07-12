@@ -1,19 +1,23 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { useScroll } from 'react-use';
 import ContentSection from '../../components/ContentSection';
 import ErrorBoundary from '../../components/ErrorBoundary';
+import ErrorFallback from '../../components/ErrorFallback';
 import Header from '../../components/Header';
 import WindowSection from '../../components/WindowSection';
 import { useRovingFocus } from '../../hooks/useRovingFocus';
 import { useWindows } from '../../hooks/useWindows';
 import { moveTab } from '../../utils/helpers';
 import styles from './App.module.scss';
-import ErrorFallback from '../../components/ErrorFallback';
 
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchDisabledToggle, setSearchDisabledToggle] = useState(false);
   const { windows, error } = useWindows();
+
+  const scrollRef = useRef(null);
+  const { x, y } = useScroll(scrollRef);
 
   if (error) return <ErrorFallback />;
 
@@ -36,8 +40,8 @@ const App: React.FC = () => {
   return (
     <div className={styles.app}>
       <ErrorBoundary>
-        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchDisabledToggle={searchDisabledToggle} />
-        <ContentSection>
+        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchDisabledToggle={searchDisabledToggle} scrollPosition={y} />
+        <ContentSection scrollRef={scrollRef}>
           <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
             <WindowSection title={'Current window'} searchTerm={searchTerm} windows={currentWindow} />
             {otherWindows.length > 0 && (

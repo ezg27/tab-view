@@ -1,5 +1,6 @@
 .windowSection {
-  background-color: var(--background);
+  background-color: #ffffff;
+  color: var(--text);
   padding: 0.5rem 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
@@ -11,6 +12,6 @@
   }
 
   .emptyListMessage {
-    color: #a1a1a1;
+    color: #8f8f8f;
   }
 }

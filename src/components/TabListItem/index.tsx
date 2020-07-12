@@ -34,7 +34,9 @@ const TabListItem: React.FC<TabListItemProps> = memo(({ tab, tabIndex, parentWin
       ...style,
       // Fix for glitchy grab hand cursor when hovering on the edge of tab list item
       cursor: snapshot.isDragging ? '-webit-grabbing' : 'pointer',
-      backgroundColor: snapshot.isDragging ? '#cccccc' : '',
+      color: snapshot.isDragging ? '#000000' : '',
+      backgroundColor: snapshot.isDragging ? '#aec1ff' : '',
+      boxShadow: snapshot.isDragging ? '0 10px 12px 0 rgba(0, 0, 0, 0.2)' : '',
     };
   };
 
