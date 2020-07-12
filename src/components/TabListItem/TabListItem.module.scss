@@ -5,6 +5,7 @@
   padding: 0.5rem;
   border-radius: 5px;
   color: var(--text);
+  transition: box-shadow 0.1s ease-in-out, background-color 0.1s ease-in-out;
 
   p {
     overflow: hidden;
@@ -17,16 +18,16 @@
 
   &:hover {
     cursor: pointer;
-    background-color: #e6e6e6;
+    background-color: #aec1ff6b;
     user-select: none;
-    box-shadow: 0 7px 5px -5px rgba(165, 165, 165, 0.5);
+    box-shadow: 0 7px 5px -5px rgba(0, 0, 0, 0.2);
     color: #000000;
   }
 
   &:focus {
-    background-color: #cccccc;
+    background-color: #aec1ff;
     outline: none;
-    box-shadow: 0 7px 5px -5px rgba(165, 165, 165, 0.5);
+    box-shadow: 0 7px 5px -5px rgba(0, 0, 0, 0.2);
     color: #000000;
   }
 }
