@@ -1,6 +1,7 @@
 {
   "name": "TabView",
   "version": "0.0.1",
+  "description": "A powerful tab manager for Google Chrome",
   "manifest_version": 2,
   "icons": {
     "16": "images/tabview16.png",

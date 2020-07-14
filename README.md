@@ -1,5 +1,7 @@
 # TabView
 
+<img width="300" alt="tabview-screenshot" src="https://user-images.githubusercontent.com/40216869/87451745-36ca2480-c5f8-11ea-8e20-6c50b97173fa.png">
+
 A powerful tab manager extension for Google Chrome. Provides an overview of all currently open Chrome windows, allowing tabs to be searched, selected, closed and seamlessly moved within/between windows in just a few clicks.
 
 Quickly opened by key command (Mac: `CMD`+`Shift`+`A`, Windows: `CTRL`+`Shift`+`A`), the user can quickly navigate the list with the `UP` and `DOWN` arrow keys, selecting one with `Enter`. Tabs can be moved within and between windows by clicking and dragging, and the search field will 'fuzzy-filter' the list based on user input.
