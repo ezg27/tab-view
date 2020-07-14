@@ -3,7 +3,7 @@
 
 A powerful tab manager extension for Google Chrome.
 
-<img width="400" alt="tabview-screenshot" src="https://user-images.githubusercontent.com/40216869/87453652-b78a2000-c5fa-11ea-98bc-cd201838e8a0.png">
+<img width="400" alt="tabview-screenshot" src="https://user-images.githubusercontent.com/40216869/87453896-25364c00-c5fb-11ea-9e19-a436f56f9dab.png">
 
 Provides an overview of all currently open Chrome windows, allowing tabs to be searched, selected, closed and seamlessly moved within/between windows in just a few clicks.
 
