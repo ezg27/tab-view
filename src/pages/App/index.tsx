@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
 import { useScroll } from 'react-use'
 import ContentSection from '../../components/ContentSection'
@@ -12,24 +12,26 @@ import { moveTab } from '../../utils/helpers'
 import styles from './App.module.scss'
 
 const App: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [searchDisabledToggle, setSearchDisabledToggle] = useState(false)
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [searchDisabledToggle, setSearchDisabledToggle] = React.useState(false)
   const { windows, error } = useWindows()
 
-  const scrollRef = useRef(null)
+  const scrollRef = React.useRef(null)
   const { y } = useScroll(scrollRef)
 
-  if (error) return <ErrorFallback />
+  if (error) {
+    return <ErrorFallback />
+  }
 
   // Setup arrow key navigation
   useRovingFocus()
 
-  const onDragStart = useCallback(() => {
+  const onDragStart = React.useCallback(() => {
     // Disable search input to prevent list rendering bugs
     setSearchDisabledToggle(state => !state)
   }, [])
 
-  const onDragEnd = useCallback((result: DropResult) => {
+  const onDragEnd = React.useCallback((result: DropResult) => {
     // Re-enable search
     setSearchDisabledToggle(state => !state)
     moveTab(result)
